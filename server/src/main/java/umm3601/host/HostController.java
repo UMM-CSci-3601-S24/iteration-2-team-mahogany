@@ -27,6 +27,7 @@ import com.mongodb.client.model.Sorts;
 public class HostController implements Controller {
 
   private static final String API_HOST_BY_ID = "/api/hosts/{id}";
+  private static final String API_HUNT = "/api/hunts/{id}";
   private static final String API_HUNTS = "/api/hunts";
   private static final String API_TASKS = "/api/tasks";
 
@@ -195,7 +196,9 @@ public class HostController implements Controller {
 
     // server.get(API_HUNTS, this::getHunts);
 
-    server.post(API_HUNTS, this::addNewHunt);
+    server.get(API_HUNT, this::getHunt);
+
+    server.post(API_HUNT, this::addNewHunt);
 
     server.get(API_TASKS, this::getTasks);
 
