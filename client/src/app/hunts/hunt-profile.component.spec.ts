@@ -8,12 +8,12 @@ import { MockHostService } from '../../testing/host.service.mock';
 import { Hunt } from './hunt';
 import { HuntCardComponent } from './hunt-card.component';
 import { HuntProfileComponent } from './hunt-profile.component';
-import { HuntService } from './hunt.service';
+import { HostService } from '../hosts/host.service';
 
 describe('HuntProfileComponent', () => {
   let component: HuntProfileComponent;
   let fixture: ComponentFixture<HuntProfileComponent>;
-  const mockHuntService = new MockHostService();
+  const mockHostService = new MockHostService();
   const chrisId = 'chris_id';
   const activatedRoute: ActivatedRouteStub = new ActivatedRouteStub({
     id : chrisId
@@ -27,7 +27,7 @@ describe('HuntProfileComponent', () => {
         HuntProfileComponent, HuntCardComponent
     ],
     providers: [
-        { provide: HuntService, useValue: mockHuntService },
+        { provide: HostService, useValue: mockHostService },
         { provide: ActivatedRoute, useValue: activatedRoute }
     ]
 })
@@ -85,7 +85,7 @@ describe('HuntProfileComponent', () => {
     // "Spy" on the `.addHunt()` method in the hunt service. Here we basically
     // intercept any calls to that method and return the error response
     // defined above.
-    const getHuntSpy = spyOn(mockHuntService, 'getHuntById')
+    const getHuntSpy = spyOn(mockHostService, 'getHuntById')
       .and
       .returnValue(throwError(() => mockError));
 
