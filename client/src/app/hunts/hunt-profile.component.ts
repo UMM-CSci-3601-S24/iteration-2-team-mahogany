@@ -6,7 +6,7 @@ import { Subject } from 'rxjs';
 import { map, switchMap, takeUntil } from 'rxjs/operators';
 import { Hunt } from './hunt';
 import { HuntCardComponent } from './hunt-card.component';
-import { HuntService } from './hunt.service';
+import { HostService } from '../hosts/host.service';
 
 @Component({
     selector: 'app-hunt-profile',
@@ -21,7 +21,7 @@ export class HuntProfileComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe = new Subject<void>();
 
-  constructor(private snackBar: MatSnackBar, private route: ActivatedRoute, private huntService: HuntService) { }
+  constructor(private snackBar: MatSnackBar, private route: ActivatedRoute, private hostService: HostService) { }
 
   ngOnInit(): void {
 
@@ -29,7 +29,7 @@ export class HuntProfileComponent implements OnInit, OnDestroy {
 
       map((paramMap: ParamMap) => paramMap.get('id')),
 
-      switchMap((id: string) => this.huntService.getHuntById(id)),
+      switchMap((id: string) => this.hostService.getHuntById(id)),
 
       takeUntil(this.ngUnsubscribe)
     ).subscribe({
@@ -49,13 +49,7 @@ export class HuntProfileComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    // When the component is destroyed, we'll emit an empty
-    // value as a way of saying that any active subscriptions should
-    // shut themselves down so the system can free up any associated
-    // resources, like memory.
     this.ngUnsubscribe.next();
-    // Calling `complete()` says that this `Subject` is done and will
-    // never send any further values.
     this.ngUnsubscribe.complete();
   }
 }
