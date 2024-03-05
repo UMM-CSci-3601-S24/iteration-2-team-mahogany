@@ -13,6 +13,7 @@ import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { HttpClientModule } from '@angular/common/http';
 
+
 @Component({
     selector: 'app-hunt-profile',
     templateUrl: './hunt-profile.component.html',
@@ -51,6 +52,10 @@ export class HuntProfileComponent implements OnInit, OnDestroy {
       }
 
     });
+  }
+  editHunt(id: string): void {
+    console.log('Editing hunt with ID:', id);
+    this.router.navigate(['/hunts', id, 'edit']);
   }
 
   deleteHunt(id: string): void {

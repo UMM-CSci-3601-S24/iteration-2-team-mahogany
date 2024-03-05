@@ -10,6 +10,7 @@ import { CompleteHunt } from '../hunts/completeHunt';
   providedIn: 'root'
 })
 export class HostService {
+
   readonly hostUrl: string = `${environment.apiUrl}hosts`;
   readonly huntUrl: string = `${environment.apiUrl}hunts`;
   readonly taskUrl: string = `${environment.apiUrl}tasks`;
@@ -33,7 +34,11 @@ export class HostService {
   addTask(newTask: Partial<Task>): Observable<string> {
     return this.httpClient.post<{id: string}>(this.taskUrl, newTask).pipe(map(res => res.id));
   }
-  
+
+  editHunt(id: string, updatedHunt: { name: string; description: string; est: number; }): Observable<Hunt> {
+    return this.httpClient.put<Hunt>(`${this.huntUrl}/${id}`, updatedHunt);
+  }
+
   deleteHunt(id: string): Observable<void> {
     return this.httpClient.delete<void>(`/api/hunts/${id}`);
   }

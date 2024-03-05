@@ -97,6 +97,8 @@ public class HostController implements Controller {
     }
   }
 
+
+
   public void getHunts(Context ctx) {
     Bson combinedFilter = constructFilterHunts(ctx);
     Bson sortingOrder = constructSortingOrderHunts(ctx);
@@ -189,6 +191,24 @@ public class HostController implements Controller {
     ctx.status(HttpStatus.OK);
   }
 
+  public void updateHunt(Context ctx) {
+    String id = ctx.pathParam("id");
+    Hunt updatedHunt = ctx.bodyAsClass(Hunt.class);
+    Hunt hunt;
+
+    try {
+        hunt = huntCollection.findOneAndUpdate(eq("_id", new ObjectId(id)), new Document("$set", updatedHunt));
+    } catch (IllegalArgumentException e) {
+        throw new BadRequestResponse("The requested hunt id wasn't a legal Mongo Object ID.");
+    }
+    if (hunt == null) {
+        throw new NotFoundResponse("The requested hunt was not found");
+    } else {
+        ctx.json(hunt);
+        ctx.status(HttpStatus.OK);
+    }
+}
+
   public void getCompleteHunt(Context ctx) {
     CompleteHunt completeHunt = new CompleteHunt();
     completeHunt.hunt = getHunt(ctx);
@@ -205,7 +225,10 @@ public class HostController implements Controller {
     server.post(API_HUNTS, this::addNewHunt);
     server.get(API_TASKS, this::getTasks);
     server.post(API_TASKS, this::addNewTask);
+    server.put(API_HOST_BY_ID, this::updateHunt);
 
     server.delete(API_HUNT_BY_ID, this::deleteHunt);
   }
+
+
 }
