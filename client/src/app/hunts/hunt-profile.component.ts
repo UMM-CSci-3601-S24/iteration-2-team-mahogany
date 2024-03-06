@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router, RouterLink } from '@angular/router';
 import { Subject } from 'rxjs';
 import { map, switchMap, takeUntil } from 'rxjs/operators';
 import { HuntCardComponent } from './hunt-card.component';
@@ -19,7 +19,7 @@ import { HttpClientModule } from '@angular/common/http';
     templateUrl: './hunt-profile.component.html',
     styleUrls: ['./hunt-profile.component.scss'],
     standalone: true,
-    imports: [HuntCardComponent, MatCardModule, AddTaskComponent, MatDivider, MatIconButton, MatIcon, HttpClientModule]
+    imports: [HuntCardComponent, MatCardModule, AddTaskComponent, MatDivider, MatIconButton, MatIcon, HttpClientModule, RouterLink]
 })
 export class HuntProfileComponent implements OnInit, OnDestroy {
   completeHunt: CompleteHunt;
@@ -53,10 +53,6 @@ export class HuntProfileComponent implements OnInit, OnDestroy {
 
     });
   }
-  editHunt(id: string): void {
-    console.log('Editing hunt with ID:', id);
-    this.router.navigate(['/hunts', id, 'edit']);
-  }
 
   deleteHunt(id: string): void {
     console.log('Deleting hunt with ID:', id);
@@ -65,6 +61,7 @@ export class HuntProfileComponent implements OnInit, OnDestroy {
       this.router.navigate(['/hosts']);
     });
   }
+
 
   ngOnDestroy() {
     this.ngUnsubscribe.next();

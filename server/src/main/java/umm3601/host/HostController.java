@@ -207,6 +207,7 @@ public class HostController implements Controller {
         ctx.json(hunt);
         ctx.status(HttpStatus.OK);
     }
+
 }
 
   public void getCompleteHunt(Context ctx) {

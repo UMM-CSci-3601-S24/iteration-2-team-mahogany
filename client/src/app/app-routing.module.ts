@@ -24,7 +24,8 @@ const routes: Routes = [
   {path: 'hunts/new', component: AddHuntComponent, title: 'Add Hunt'},
   {path: 'hunts/:id', component: HuntProfileComponent, title: 'Hunts Profile'},
   {path: 'hunts', component: HuntCardComponent, title: 'Hunts'},
-  {path: 'hunts/:id/edit', component: HuntEditComponent },
+  {path: 'hunts/:id/edit', component: HuntEditComponent, title: 'Edit Hunt'},
+
 
 ];
 

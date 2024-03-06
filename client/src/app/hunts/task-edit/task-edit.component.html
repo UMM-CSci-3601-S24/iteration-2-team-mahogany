@@ -1,0 +1,21 @@
+<!-- task-edit.component.html -->
+
+<h1>{{ huntName }}</h1>
+<p>{{ huntDesc }}</p>
+<p>Estimate: {{ huntEst }}</p>
+
+<div *ngFor="let task of tasks; let i = index">
+  <h2>Task {{ i + 1 }}</h2>
+  <label>
+    Name:
+    <input [(ngModel)]="task.name" placeholder="Task Name">
+  </label>
+  <label>
+    Description:
+    <input [(ngModel)]="task.desc" placeholder="Task Description">
+  </label>
+  <label>
+    Estimate:
+    <input [(ngModel)]="task.est" placeholder="Task Estimate">
+  </label>
+</div>

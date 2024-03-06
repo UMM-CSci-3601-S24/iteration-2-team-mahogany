@@ -19,6 +19,8 @@ export class HostService {
   }
 
   getHunts(hostId: string): Observable<Hunt[]> {
+    console.log("Getting hunts for host with id: " + hostId);
+    console.log(this.hostUrl + "/" + hostId);
     return this.httpClient.get<Hunt[]>(`${this.hostUrl}/${hostId}`);
   }
 
@@ -35,7 +37,9 @@ export class HostService {
     return this.httpClient.post<{id: string}>(this.taskUrl, newTask).pipe(map(res => res.id));
   }
 
-  editHunt(id: string, updatedHunt: { name: string; description: string; est: number; }): Observable<Hunt> {
+  editHunt(id: string, updatedHunt: { name: string; description: string; est: number; tasks: Task[]; }): Observable<Hunt> {
+    console.log("Editing hunt with id: " + id);
+    console.log(this.huntUrl + "/" + id);
     return this.httpClient.put<Hunt>(`${this.huntUrl}/${id}`, updatedHunt);
   }
 
