@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormControl, FormsModule, ReactiveFormsModule, FormBuilder, FormArray } from '@angular/forms';
+import { FormGroup, FormControl, FormsModule, ReactiveFormsModule, FormBuilder } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -36,40 +36,37 @@ export class HuntEditComponent implements OnInit {
       name: new FormControl(),
       description: new FormControl(),
       est: new FormControl(),
-      tasks: this.fb.array([]) // add tasks as a FormArray
     });
   }
 
-  get tasks(): FormArray {
-    return this.huntform.get('tasks') as FormArray;
-  }
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     this.hostService.getHuntById(id).subscribe(completeHunt => {
       console.log(completeHunt); // log the CompleteHunt object
 
-      const tasksFormArray = this.huntform.get('tasks') as FormArray;
-      completeHunt.tasks.forEach(task => {
-        tasksFormArray.push(this.fb.group({
-          name: task.name
-        }));
-      });
-
       this.huntform.setValue({
         name: completeHunt.hunt.name,
         description: completeHunt.hunt.description,
         est: completeHunt.hunt.est,
-        tasks: tasksFormArray.value // provide a value for the tasks control
       });
     });
   }
   onSubmit(): void {
     const id = this.route.snapshot.paramMap.get('id');
-    this.hostService.editHunt(id, this.huntform.value).subscribe(() => {
-      // Handle successful update
-      // For example, navigate back to the list of hunts
-      this.router.navigate(['/hunts']);
+    this.hostService.editHunt(id, this.huntform.value).subscribe({
+      next: () => {
+        // Handle successful update
+        // For example, navigate back to the list of hunts
+        this.router.navigate(['/hunts']);
+      },
+      error: (err) => {
+        // Handle error
+        // For example, log the error and show an error message to the user
+        console.error(`Failed to update hunt: ${err.message}`);
+        // Show an error message to the user
+        // This depends on how you handle user notifications in your app
+      }
     });
   }
 }

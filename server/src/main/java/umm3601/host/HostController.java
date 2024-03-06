@@ -4,6 +4,7 @@ import io.javalin.Javalin;
 import io.javalin.http.BadRequestResponse;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
+import io.javalin.http.InternalServerErrorResponse;
 import io.javalin.http.NotFoundResponse;
 import umm3601.Controller;
 
@@ -191,22 +192,29 @@ public class HostController implements Controller {
     ctx.status(HttpStatus.OK);
   }
 
-  public void updateHunt(Context ctx) {
-    String id = ctx.pathParam("id");
-    Hunt updatedHunt = ctx.bodyAsClass(Hunt.class);
-    Hunt hunt;
+public void updateHunt(Context ctx) {
+  String id = ctx.pathParam("id");
+  Hunt updatedHunt = ctx.bodyAsClass(Hunt.class);
+  Hunt hunt;
 
+  try {
+    hunt = huntCollection.findOne(eq("_id", new ObjectId(id)));
+  } catch (IllegalArgumentException e) {
+    throw new BadRequestResponse("The requested hunt id wasn't a legal Mongo Object ID.");
+  }
+
+  if (hunt == null) {
+    throw new NotFoundResponse("The requested hunt was not found");
+  } else {
     try {
-        hunt = huntCollection.findOneAndUpdate(eq("_id", new ObjectId(id)), new Document("$set", updatedHunt));
-    } catch (IllegalArgumentException e) {
-        throw new BadRequestResponse("The requested hunt id wasn't a legal Mongo Object ID.");
+      hunt = huntCollection.findOneAndUpdate(eq("_id", new ObjectId(id)), new Document("$set", updatedHunt));
+      ctx.json(hunt);
+      ctx.status(HttpStatus.OK);
+    } catch (Exception e) {
+      throw new InternalServerErrorResponse("Error updating the hunt.");
     }
-    if (hunt == null) {
-        throw new NotFoundResponse("The requested hunt was not found");
-    } else {
-        ctx.json(hunt);
-        ctx.status(HttpStatus.OK);
-    }
+  }
+
 
 }
 
@@ -226,7 +234,7 @@ public class HostController implements Controller {
     server.post(API_HUNTS, this::addNewHunt);
     server.get(API_TASKS, this::getTasks);
     server.post(API_TASKS, this::addNewTask);
-    server.put(API_HOST_BY_ID, this::updateHunt);
+    server.put(API_HUNT_BY_ID, this::updateHunt);
 
     server.delete(API_HUNT_BY_ID, this::deleteHunt);
   }
