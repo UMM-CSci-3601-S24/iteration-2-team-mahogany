@@ -17,4 +17,6 @@
 .add-task-title {
   font-size: 24px;
   margin-bottom: 20px;
+  filter: invert(1);
+  mix-blend-mode: difference;
 }
