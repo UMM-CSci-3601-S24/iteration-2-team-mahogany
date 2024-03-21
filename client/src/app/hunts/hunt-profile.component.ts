@@ -15,13 +15,14 @@ import { HttpClientModule } from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog';
 import { DeleteHuntDialogComponent } from './deleteHunt/delete-hunt-dialog.component';
 import { DeleteTaskDialogComponent } from './deleteTask/delete-task-dialog.component';
+import { RouterModule } from '@angular/router';
 
 @Component({
     selector: 'app-hunt-profile',
     templateUrl: './hunt-profile.component.html',
     styleUrls: ['./hunt-profile.component.scss'],
     standalone: true,
-    imports: [HuntCardComponent, MatCardModule, AddTaskComponent, MatDivider, MatIconButton, MatIcon, HttpClientModule]
+    imports: [HuntCardComponent, MatCardModule, AddTaskComponent, MatDivider, MatIconButton, MatIcon, HttpClientModule, RouterModule]
 })
 export class HuntProfileComponent implements OnInit, OnDestroy {
   confirmDeleteHunt: boolean =false;
