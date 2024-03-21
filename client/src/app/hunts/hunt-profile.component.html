@@ -8,15 +8,16 @@
         <mat-card-title class="tasks-title">Tasks:</mat-card-title>
         @for (task of this.completeHunt.tasks; track task._id) {
           <div class="task-line">
-          <li matListItemTitle mat-line class="task-list-name"> {{task.name}} </li>
-          <button mat-fab class="remove-task-fab" matTooltip="Remove Task" matTooltipPosition="left" (click)="openDeleteTaskDialog(task._id)" data-test="removeTaskButton">
-            <mat-icon class="md-24" aria-label="Remove Task">delete</mat-icon>
-          </button>
-          <button mat-mini-fab color="primary" [routerLink]="['/tasks', task._id, 'edit']">
-            <mat-icon>edit</mat-icon>
-          </button>
-
-        </div>
+            <li matListItemTitle mat-line class="task-list-name"> {{task.name}} </li>
+            <div class="button-container" style="display: flex;">
+              <button mat-mini-fab class="edit-task-fab" color="warn" [routerLink]="['/tasks', task._id, 'edit']">
+                <mat-icon class="edit-icon">edit</mat-icon>
+              </button>
+              <button mat-fab class="remove-task-fab red-button" matTooltip="Remove Task" matTooltipPosition="left" (click)="openDeleteTaskDialog(task._id)" data-test="removeTaskButton">
+                <mat-icon class="remove-icon" aria-label="Remove Task">delete</mat-icon>
+              </button>
+            </div>
+          </div>
 
           <mat-divider></mat-divider>
           }
