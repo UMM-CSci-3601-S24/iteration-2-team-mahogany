@@ -5,12 +5,15 @@
       <ol class="task-list">
         @for (task of this.completeHunt.tasks; track task._id) {
           <li matListItemTitle mat-line class="task-list-name"> {{task.name}} </li>
+          <button mat-mini-fab color="primary" [routerLink]="['/tasks', task._id, 'edit']">
+            <mat-icon>edit</mat-icon>
+          </button>
           <mat-divider></mat-divider>
         }
-    </ol>
-    <div>
-      <app-add-task [huntId]="this.completeHunt.hunt._id"></app-add-task>
-    </div>
+      </ol>
+      <div>
+        <app-add-task [huntId]="this.completeHunt.hunt._id"></app-add-task>
+      </div>
     } @else if (error) {
       <mat-card class="error-card">
         <mat-card-content>
@@ -34,14 +37,21 @@
           <p>Loading Hunt Profile data...</p>
         </mat-card-content>
       </mat-card>
+
     }
     <button mat-fab class="edit-hunt-fab" matTooltip="Edit Hunt" matTooltipPosition="left" [routerLink]="['/hunts', completeHunt.hunt._id, 'edit']" data-test="editHuntButton">
       <mat-icon class="md-24" aria-label="Edit Hunt">edit</mat-icon>
     </button>
-    
+
+    <button mat-fab class="edit-hunt-fab" matTooltip="Edit Hunt" matTooltipPosition="left" [routerLink]="['/hunts', completeHunt.hunt._id, 'edit']" data-test="editHuntButton">
+      <mat-icon class="md-24" aria-label="Edit Hunt">edit</mat-icon>
+    </button>
+
     <button mat-fab class="remove-hunt-fab" matTooltip="Remove Hunt" matTooltipPosition="left" (click)="deleteHunt(completeHunt.hunt._id)" data-test="removeHuntButton">
 
       <mat-icon class="md-24" aria-label="Remove Hunt">delete</mat-icon>
     </button>
   </div>
 </div>
+
+

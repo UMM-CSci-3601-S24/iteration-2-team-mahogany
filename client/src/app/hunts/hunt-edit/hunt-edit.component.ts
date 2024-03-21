@@ -58,7 +58,7 @@ export class HuntEditComponent implements OnInit {
       next: () => {
         // Handle successful update
         // For example, navigate back to the list of hunts
-        this.router.navigate(['/hunts']);
+        this.router.navigate(['/hosts']);
       },
       error: (err) => {
         // Handle error

@@ -1,21 +1,11 @@
-<!-- task-edit.component.html -->
+<div class="task-edit">
+  <h2>Edit Task</h2>
 
-<h1>{{ huntName }}</h1>
-<p>{{ huntDesc }}</p>
-<p>Estimate: {{ huntEst }}</p>
-
-<div *ngFor="let task of tasks; let i = index">
-  <h2>Task {{ i + 1 }}</h2>
-  <label>
-    Name:
-    <input [(ngModel)]="task.name" placeholder="Task Name">
-  </label>
-  <label>
-    Description:
-    <input [(ngModel)]="task.desc" placeholder="Task Description">
-  </label>
-  <label>
-    Estimate:
-    <input [(ngModel)]="task.est" placeholder="Task Estimate">
-  </label>
+  <form [formGroup]="taskForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="taskName">Task Name</label>
+      <input type="text" id="taskName" formControlName="name" class="form-control">
+    </div>
+    <button type="submit" class="btn btn-primary" [disabled]="!taskForm.valid">Update Task</button>
+  </form>
 </div>

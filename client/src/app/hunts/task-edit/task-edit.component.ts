@@ -1,32 +1,61 @@
-// task-edit.component.ts
-/*
-import { Component, OnInit, Input } from '@angular/core';
-import { Task } from './task';
+import { Component, OnInit } from '@angular/core';
+import { FormGroup, FormControl, FormBuilder } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { HostService } from 'src/app/hosts/host.service';
+import { ReactiveFormsModule } from '@angular/forms'; // Move this import statement to the top of the file
 
-@Component({
+
+@Component ({
   selector: 'app-task-edit',
   templateUrl: './task-edit.component.html',
-  styleUrls: ['./task-edit.component.css']
+  styleUrls: ['./task-edit.component.scss'], // Remove the comma here
+  standalone: true,
+  imports: [ReactiveFormsModule] // Remove this line
 })
- class TaskEditComponent implements OnInit {
-    @Input() huntName: string;
-    @Input() huntDesc: string;
-    @Input() huntEst: number;
-    @Input() tasks: Task[];
+export class TaskEditComponent implements OnInit {
+  taskForm: FormGroup;
 
-    constructor() { }
-
-    ngOnInit(): void {
-      console.log('Hunt Name:', this.huntName);
-      console.log('Hunt Description:', this.huntDesc);
-      console.log('Hunt Estimate:', this.huntEst);
-      console.log('Tasks:', this.tasks);
-    }
+  constructor(
+    private route: ActivatedRoute,
+    private hostService: HostService,
+    private router: Router,
+    private fb: FormBuilder // inject FormBuilder
+  ) {
+    this.taskForm = this.fb.group({
+      huntId: new FormControl(),
+      name: new FormControl(),
+    });
   }
 
-  interface Task {
-    name: string;
-    desc: string;
-    est: number;
-  }*/
-  // Define the properties of a task here
+
+
+
+  ngOnInit(): void {
+    const id = this.route.snapshot.paramMap.get('id');
+    this.hostService.getTaskById(id).subscribe(task => {
+      console.log(task); // log the task object
+      this.taskForm.patchValue(task);
+
+    });
+  }
+
+
+//   onSubmit(): void {
+//     if (this.taskForm.valid) {
+//       this.hostService.editTask(this.taskForm.value).subscribe(() => {
+//         this.router.navigate(['/hunts']);
+//       });
+//     }
+//   }
+// }
+
+onSubmit(): void {
+  const id = this.route.snapshot.paramMap.get('id');
+  this.hostService.editTask(id, this.taskForm.value).subscribe(() => {
+    this.router.navigate(['/hosts']);
+  });
+}
+}
+
+
+

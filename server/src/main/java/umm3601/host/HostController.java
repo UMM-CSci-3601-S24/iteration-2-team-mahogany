@@ -33,6 +33,8 @@ public class HostController implements Controller {
   private static final String API_HUNTS = "/api/hunts";
   private static final String API_HUNT_BY_ID = "/api/hunts/{id}";
   private static final String API_TASKS = "/api/tasks";
+  private static final String API_TASKS_BY_ID = "/api/tasks/{id}";
+
 
   static final String HOST_KEY = "hostId";
   static final String HUNT_KEY = "huntId";
@@ -97,6 +99,21 @@ public class HostController implements Controller {
       return hunt;
     }
   }
+  public void getTask(Context ctx) {
+    String id = ctx.pathParam("id");
+    Task task;
+
+    try {
+      task = taskCollection.find(eq("_id", new ObjectId(id))).first();
+    } catch (IllegalArgumentException e) {
+      throw new BadRequestResponse("The requested task id wasn't a legal Mongo Object ID.");
+    }
+    if (task == null) {
+      throw new NotFoundResponse("The requested task was not found");
+    } else {
+      ctx.json(task);
+    }
+}
 
 
 
@@ -207,7 +224,7 @@ public void updateHunt(Context ctx) {
     throw new NotFoundResponse("The requested hunt was not found");
   } else {
 try {
-  hunt = huntCollection.findOneAndUpdate(eq("_id", new ObjectId(id)), new Document("$set", updatedHunt));
+  hunt = huntCollection.findOneAndReplace(eq("_id", new ObjectId(id)),updatedHunt);
   ctx.json(hunt);
   ctx.status(HttpStatus.OK);
 } catch (Exception e) {
@@ -219,6 +236,32 @@ try {
 
 }
 
+public void updateTask(Context ctx) {
+  String id = ctx.pathParam("id");
+  Task updatedTask = ctx.bodyAsClass(Task.class);
+  Task task;
+
+  try {
+    task = taskCollection.findOne(eq("_id", new ObjectId(id)));
+  } catch (IllegalArgumentException e) {
+    throw new BadRequestResponse("The requested task id wasn't a legal Mongo Object ID.");
+  }
+
+  if (task == null) {
+    throw new NotFoundResponse("The requested task was not found");
+  } else {
+    try {
+      System.out.println("Updated task: " + updatedTask);
+      task = taskCollection.findOneAndReplace(eq("_id", new ObjectId(id)), updatedTask);
+      System.out.println("Result of findOneAndReplace: " + task);
+      ctx.json(task);
+      ctx.status(HttpStatus.OK);
+    } catch (Exception e) {
+      e.printStackTrace(); // This will print the stack trace of the exception to the console
+      throw new InternalServerErrorResponse("Error updating the task.");
+    }
+  }
+}
   public void getCompleteHunt(Context ctx) {
     CompleteHunt completeHunt = new CompleteHunt();
     completeHunt.hunt = getHunt(ctx);
@@ -236,6 +279,8 @@ try {
     server.get(API_TASKS, this::getTasks);
     server.post(API_TASKS, this::addNewTask);
     server.put(API_HUNT_BY_ID, this::updateHunt);
+    server.put(API_TASKS_BY_ID, this::updateTask);
+    server.get(API_TASKS_BY_ID, this::getTask);
 
     server.delete(API_HUNT_BY_ID, this::deleteHunt);
   }
