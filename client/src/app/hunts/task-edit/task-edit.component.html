@@ -1,0 +1,11 @@
+<div class="task-edit">
+  <h2>Edit Task</h2>
+
+  <form [formGroup]="taskForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="taskName">Task Name</label>
+      <input type="text" id="taskName" formControlName="name" class="form-control">
+    </div>
+    <button type="submit" class="btn btn-primary" [disabled]="!taskForm.valid">Update Task</button>
+  </form>
+</div>

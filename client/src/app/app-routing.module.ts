@@ -5,6 +5,8 @@ import { HostProfileComponent } from './hosts/host-profile.component';
 import { HuntProfileComponent } from './hunts/hunt-profile.component';
 import { HuntCardComponent } from './hunts/hunt-card.component';
 import { AddHuntComponent } from './hunts/addHunt/add-hunt.component';
+import { HuntEditComponent } from './hunts/hunt-edit/hunt-edit.component';
+import { TaskEditComponent } from './hunts/task-edit/task-edit.component';
 
 // Note that the 'users/new' route needs to come before 'users/:id'.
 // If 'users/:id' came first, it would accidentally catch requests to
@@ -15,6 +17,8 @@ const routes: Routes = [
   {path: 'hunts/new', component: AddHuntComponent, title: 'Add Hunt'},
   {path: 'hunts/:id', component: HuntProfileComponent, title: 'Hunts Profile'},
   {path: 'hunts', component: HuntCardComponent, title: 'Hunts'},
+  {path: 'hunts/:id/edit', component: HuntEditComponent, title: 'Edit Hunt'},
+  {path: 'tasks/:id/edit', component: TaskEditComponent, title: 'Edit Task'},
 ];
 
 @NgModule({
