@@ -36,6 +36,9 @@ export class HuntEditComponent implements OnInit {
       name: new FormControl(),
       description: new FormControl(),
       est: new FormControl(),
+      hostId: new FormControl(),
+      numberOfTasks: new FormControl()
+
     });
   }
 
@@ -49,6 +52,9 @@ export class HuntEditComponent implements OnInit {
         name: completeHunt.hunt.name,
         description: completeHunt.hunt.description,
         est: completeHunt.hunt.est,
+        hostId: completeHunt.hunt.hostId,
+        numberOfTasks: completeHunt.hunt.numberOfTasks
+
       });
     });
   }

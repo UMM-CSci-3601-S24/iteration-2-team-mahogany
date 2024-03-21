@@ -147,6 +147,21 @@ public class HostController implements Controller {
 
     return matchingTasks;
   }
+  public void getTask(Context ctx) {
+    String id = ctx.pathParam("id");
+    Task task;
+
+    try {
+      task = taskCollection.find(eq("_id", new ObjectId(id))).first();
+    } catch (IllegalArgumentException e) {
+      throw new BadRequestResponse("The requested task id wasn't a legal Mongo Object ID.");
+    }
+    if (task == null) {
+      throw new NotFoundResponse("The requested task was not found");
+    } else {
+      ctx.json(task);
+    }
+}
 
   private Bson constructSortingOrderTasks(Context ctx) {
     String sortBy = Objects.requireNonNullElse(ctx.queryParam("sortby"), "name");
@@ -306,7 +321,9 @@ try {
     server.post(API_TASKS, this::addNewTask);
     server.delete(API_HUNT, this::deleteHunt);
     server.delete(API_TASK, this::deleteTask);
-    server.put(API_HUNT_BY_ID, this::updateHunt);
-    server.put(API_TASKS_BY_ID, this::updateTask);
+    server.put(API_HUNT, this::updateHunt);
+    server.put(API_TASK, this::updateTask);
+    server.get(API_TASK, this::getTask);
+
   }
 }
