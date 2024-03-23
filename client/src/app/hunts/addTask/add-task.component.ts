@@ -9,7 +9,7 @@ import { MatSelectModule } from "@angular/material/select";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { RouterLink } from "@angular/router";
 import { HostService } from "src/app/hosts/host.service";
-import { Hunt } from "../hunt";
+
 
 
 @Component({
@@ -21,8 +21,6 @@ import { Hunt } from "../hunt";
     providers: [HostService]
 })
 export class AddTaskComponent {
-[x: string]: any;
-  hunt = input.required<Hunt>();
 
 
   huntId = input.required<string>();
