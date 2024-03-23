@@ -16,7 +16,7 @@ const routes: Routes = [
   {path: 'hunts/new', component: AddHuntComponent, title: 'Add Hunt'},
   {path: 'hunts/:id', component: HuntProfileComponent, title: 'Hunts Profile'},
   {path: 'hunts', component: HuntCardComponent, title: 'Hunts'},
-  {path: 'hunts/current/:id', component: CurrentHuntComponent, title: 'Current Hunt'},
+  {path: 'hunts/current/:huntId', component: CurrentHuntComponent, title: 'Current Hunt'},
 ];
 
 @NgModule({

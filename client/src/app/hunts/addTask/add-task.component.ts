@@ -50,6 +50,8 @@ export class AddTaskComponent {
     private snackBar: MatSnackBar,) {
   }
 
+  
+
   formControlHasError(controlName: string): boolean {
     return this.addTaskForm.get(controlName).invalid &&
       (this.addTaskForm.get(controlName).dirty || this.addTaskForm.get(controlName).touched);
