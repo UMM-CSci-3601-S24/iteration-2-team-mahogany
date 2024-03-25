@@ -2,7 +2,7 @@
   <div class="flex-1">
     <mat-card class="background">
     @if (completeHunt) {
-      <app-hunt-card class="hunt-card" [hunt]="this.completeHunt.hunt" [simple]="false">
+      <app-hunt-card [hunt]="this.completeHunt.hunt" [simple]="false">
       </app-hunt-card>
       <ol class="task-list">
         <mat-card-title class="tasks-title">Tasks:</mat-card-title>
