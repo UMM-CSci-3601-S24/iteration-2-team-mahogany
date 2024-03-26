@@ -79,8 +79,25 @@
   background-color: rgba(186, 223, 253, 0.1764705882);
 }
 
+.current-hunt-title {
+  background-color: white;
+  font-size: 2rem;
+  padding: 12px;
+  width: fit-content;
+  margin: auto;
+  border: 1px solid black;
+  border-radius: 6px;
+  box-shadow: 3px 3px black;
+  margin-bottom: 10px;
+}
 
+.stop-button {
+  font-size: 25px;
+  padding: 10px 20pxd;
+  border-radius: 5px;
+  cursor: pointer;
 
+}
 
 
 
