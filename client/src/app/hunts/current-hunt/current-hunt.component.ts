@@ -14,6 +14,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { HostService } from 'src/app/hosts/host.service';
 import { Hunt } from '../hunt';
 
+
 @Component({
     selector: 'app-current-hunt',
     standalone: true,
@@ -28,6 +29,7 @@ export class CurrentHuntComponent implements OnInit, OnDestroy {
   secondsElapsed: number = 0;
   private ngUnsubscribe = new Subject<void>();
   private timerSubscription: Subscription;
+
 
   constructor(
     private snackBar: MatSnackBar,

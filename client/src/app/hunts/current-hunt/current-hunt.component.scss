@@ -43,26 +43,6 @@
   box-shadow: 0 0 5px 0 #1128f8;
 }
 
-.remove-hunt-fab {
-  font-size: 18px;
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-  background-color: transparent;
-  color: rgb(214, 1, 1);
-}
-
-.add-task-button {
-  position: absolute;
-  bottom: 10px;
-  left: 10px;
-}
-
-.remove-task-fab {
-  background-color: transparent;
-  color: red;
-}
-
 .task-line {
   display: flex;
   align-items: center;
@@ -96,7 +76,6 @@
   padding: 10px 20pxd;
   border-radius: 5px;
   cursor: pointer;
-
 }
 
 

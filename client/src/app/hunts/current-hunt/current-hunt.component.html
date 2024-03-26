@@ -20,13 +20,13 @@
         @for (task of this.completeHunt.tasks; track task._id) {
            <div class="task-line">
           <li matListItemTitle mat-line class="task-list-name"> {{task.name}} </li>
+          <!-- <button mat-fab class="remove-task-fab" matTooltip="Remove Task" matTooltipPosition="left" (click)="openDeleteTaskDialog(task._id)" data-test="removeTaskButton">
+            <mat-icon class="md-24" aria-label="Remove Task">delete</mat-icon>
+          </button> -->
         </div>
           <mat-divider></mat-divider>
           }
     </ol>
-    <div>
-      <app-add-task class="add-task-button" data-test="addTaskButton" [huntId]="this.completeHunt.hunt._id"></app-add-task>
-    </div>
     } @else if (error) {
       <mat-card class="error-card">
         <mat-card-content>
