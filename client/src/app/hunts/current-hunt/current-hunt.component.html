@@ -1,5 +1,13 @@
+<div class="current-hunt-card">
+  <h1>Current Hunt</h1>
+  <p>
+      <span>{{ secondsElapsed }}</span> seconds have gone by!
+  </p>
+  <button class="stop-button" (click)="stopCountUp()" type="button">Stop</button>
+</div>
 
-<h1>Current Hunt</h1>
+
+
 
 <div class="flex-row">
   <div class="flex-1">
@@ -12,9 +20,6 @@
         @for (task of this.completeHunt.tasks; track task._id) {
            <div class="task-line">
           <li matListItemTitle mat-line class="task-list-name"> {{task.name}} </li>
-          <button mat-fab class="remove-task-fab" matTooltip="Remove Task" matTooltipPosition="left" (click)="openDeleteTaskDialog(task._id)" data-test="removeTaskButton">
-            <mat-icon class="md-24" aria-label="Remove Task">delete</mat-icon>
-          </button>
         </div>
           <mat-divider></mat-divider>
           }
@@ -53,3 +58,5 @@
   </mat-card>
   </div>
 </div>
+
+
