@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, input } from '@angular/core';
 import { HuntCardComponent } from "../hunt-card.component";
 import { CompleteHunt } from '../completeHunt';
 import { MatCard, MatCardActions, MatCardContent, MatCardTitle } from '@angular/material/card';
@@ -12,6 +12,7 @@ import { ActivatedRoute, ParamMap, Router, RouterLink } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { HostService } from 'src/app/hosts/host.service';
+import { Hunt } from '../hunt';
 
 @Component({
     selector: 'app-current-hunt',
@@ -21,6 +22,7 @@ import { HostService } from 'src/app/hosts/host.service';
     imports: [HuntCardComponent, MatCard, MatCardTitle, MatIcon, MatDivider, AddTaskComponent, MatCardContent, MatCardActions, RouterLink]
 })
 export class CurrentHuntComponent implements OnInit, OnDestroy {
+  hunt = input.required<Hunt>();
   completeHunt: CompleteHunt;
   error: { help: string, httpResponse: string, message: string };
   secondsElapsed: number = 0;

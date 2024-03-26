@@ -1,5 +1,5 @@
 <div class="current-hunt-card">
-  <h1 class="current-hunt-title">Current Hunt</h1>
+  <h1 class="current-hunt-title">{{ this.completeHunt.hunt.name }}</h1>
   <h2 class="elapsed-time">
       <span>{{ secondsElapsed }}</span> seconds have gone by!
   </h2>
@@ -13,8 +13,8 @@
   <div class="flex-1">
     <mat-card class="background">
     @if (completeHunt) {
-      <app-hunt-card class="hunt-card" [hunt]="this.completeHunt.hunt" [simple]="false">
-      </app-hunt-card>
+      <!-- <app-hunt-card class="hunt-card" [hunt]="this.completeHunt.hunt" [simple]="false">
+      </app-hunt-card> -->
       <ol class="task-list">
         <mat-card-title class="tasks-title">Tasks:</mat-card-title>
         @for (task of this.completeHunt.tasks; track task._id) {
