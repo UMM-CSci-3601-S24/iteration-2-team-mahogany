@@ -6,6 +6,14 @@ import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
 import io.javalin.http.NotFoundResponse;
 import umm3601.Controller;
+import io.javalin.http.Context;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
@@ -14,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
 import org.bson.Document;
 import org.bson.UuidRepresentation;
@@ -32,6 +41,8 @@ public class HostController implements Controller {
   private static final String API_HUNTS = "/api/hunts";
   private static final String API_TASK = "/api/tasks/{id}";
   private static final String API_TASKS = "/api/tasks";
+  private static final String API_UPLOAD = "/api/upload";
+  private static final String API_PHOTO = "/api/photo/{id}";
 
   static final String HOST_KEY = "hostId";
   static final String HUNT_KEY = "huntId";
@@ -63,6 +74,54 @@ public class HostController implements Controller {
       Task.class,
        UuidRepresentation.STANDARD);
   }
+
+public void uploadPhoto(Context ctx) {
+  try {
+    var uploadedFile = ctx.uploadedFile("photo");
+    if (uploadedFile != null) {
+      try (InputStream in = uploadedFile.content()) {
+        // Generate a unique ID for the file
+        String id = UUID.randomUUID().toString();
+
+        // Use the ID as the filename, but keep the original file extension
+        String extension = getFileExtension(uploadedFile.filename());
+        File file = Path.of("uploads", id + "." + extension).toFile();
+
+        Files.copy(in, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        ctx.status(200).result("Photo uploaded successfully with ID: " + id);
+      }
+    } else {
+      ctx.status(400).result("Missing photo");
+    }
+  } catch (Exception e) {
+    e.printStackTrace(); // This will print the full stack trace to the server logs
+    ctx.status(500).result("Photo upload failed: " + e.getMessage());
+  }
+}
+
+
+private String getFileExtension(String filename) {
+  int dotIndex = filename.lastIndexOf('.');
+  if (dotIndex >= 0) {
+    return filename.substring(dotIndex + 1);
+  } else {
+    return ""; // No extension
+  }
+}
+
+public void getPhoto(Context ctx) {
+  String id = ctx.pathParam("id");
+  File file = new File("uploads/" + id);
+  if (file.exists()) {
+    try {
+      ctx.result(new FileInputStream(file));
+    } catch (FileNotFoundException e) {
+      ctx.status(500).result("Error reading file: " + e.getMessage());
+    }
+  } else {
+    ctx.status(404).result("Photo not found");
+  }
+}
 
   public void getHost(Context ctx) {
     String id = ctx.pathParam("id");
@@ -248,5 +307,8 @@ public class HostController implements Controller {
     server.post(API_TASKS, this::addNewTask);
     server.delete(API_HUNT, this::deleteHunt);
     server.delete(API_TASK, this::deleteTask);
+    server.post(API_UPLOAD, this::uploadPhoto);
+    app.get("/photos/:id", this::getPhoto);
+
   }
 }
