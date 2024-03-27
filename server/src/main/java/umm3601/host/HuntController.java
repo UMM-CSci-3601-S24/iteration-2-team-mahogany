@@ -1,14 +1,6 @@
 package umm3601.host;
 
-import io.javalin.Javalin;
-import io.javalin.http.BadRequestResponse;
-import io.javalin.http.Context;
-import io.javalin.http.HttpStatus;
-import io.javalin.http.NotFoundResponse;
-import umm3601.Controller;
-
-import static com.mongodb.client.model.Filters.and;
-import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Filters.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +17,14 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Sorts;
 import com.mongodb.client.result.DeleteResult;
 
-public class HostController implements Controller {
+import io.javalin.Javalin;
+import io.javalin.http.BadRequestResponse;
+import io.javalin.http.Context;
+import io.javalin.http.HttpStatus;
+import io.javalin.http.NotFoundResponse;
+import umm3601.Controller;
+
+public class HuntController implements Controller {
 
   private static final String API_HOST = "/api/hosts/{id}";
   private static final String API_HUNT = "/api/hunts/{id}";
@@ -46,7 +45,7 @@ public class HostController implements Controller {
   private final JacksonMongoCollection<Hunt> huntCollection;
   private final JacksonMongoCollection<Task> taskCollection;
 
-  public HostController(MongoDatabase database) {
+  public HuntController(MongoDatabase database) {
     hostCollection = JacksonMongoCollection.builder().build(
       database,
       "hosts",

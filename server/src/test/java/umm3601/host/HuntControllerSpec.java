@@ -1,13 +1,9 @@
 package umm3601.host;
 
 import static com.mongodb.client.model.Filters.eq;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,8 +43,8 @@ import io.javalin.validation.ValidationException;
 import io.javalin.validation.Validator;
 
 @SuppressWarnings({ "MagicNumber" })
-public class HostControllerSpec {
-  private HostController hostController;
+public class HuntControllerSpec {
+  private HuntController hostController;
   private ObjectId frysId;
   private ObjectId huntId;
   private ObjectId taskId;
@@ -185,7 +181,7 @@ public class HostControllerSpec {
     taskDocuments.insertMany(testTasks);
     taskDocuments.insertOne(task);
 
-    hostController = new HostController(db);
+    hostController = new HuntController(db);
   }
 
   @Test
@@ -309,7 +305,7 @@ public class HostControllerSpec {
 
     assertNotEquals("", addedHunt.get("_id"));
     assertEquals("New Hunt", addedHunt.get("name"));
-    assertEquals("frysId", addedHunt.get(HostController.HOST_KEY));
+    assertEquals("frysId", addedHunt.get(HuntController.HOST_KEY));
     assertEquals("Newly made hunt", addedHunt.get("description"));
     assertEquals(45, addedHunt.get("est"));
     assertEquals(3, addedHunt.get("numberOfTasks"));
@@ -393,7 +389,7 @@ public class HostControllerSpec {
 
   @Test
   void addInvalidDescriptionHunt() throws IOException {
-    String tooLong = "t".repeat(HostController.REASONABLE_DESCRIPTION_LENGTH_HUNT + 1);
+    String tooLong = "t".repeat(HuntController.REASONABLE_DESCRIPTION_LENGTH_HUNT + 1);
     String testNewHunt = String.format("""
         {
           "hostId": "frysId",
@@ -564,7 +560,7 @@ public class HostControllerSpec {
 
   @Test
   void addInvalidLongNameTask() throws IOException {
-    String tooLong = "t".repeat(HostController.REASONABLE_NAME_LENGTH_TASK + 1);
+    String tooLong = "t".repeat(HuntController.REASONABLE_NAME_LENGTH_TASK + 1);
     String testNewTask = String.format("""
         {
           "huntId": "bestHuntId",
