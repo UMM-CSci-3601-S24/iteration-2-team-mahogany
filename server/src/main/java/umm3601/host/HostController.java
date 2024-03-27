@@ -42,7 +42,7 @@ public class HostController implements Controller {
   private static final String API_TASK = "/api/tasks/{id}";
   private static final String API_TASKS = "/api/tasks";
   private static final String API_UPLOAD = "/api/upload";
-  private static final String API_PHOTO = "/api/photo/{id}";
+  private static final String API_PHOTO = "/api/photo/{filename}";
 
   static final String HOST_KEY = "hostId";
   static final String HUNT_KEY = "huntId";
@@ -110,8 +110,8 @@ private String getFileExtension(String filename) {
 }
 
 public void getPhoto(Context ctx) {
-  String id = ctx.pathParam("id");
-  File file = new File("uploads/" + id);
+  String filename = ctx.pathParam("filename");
+  File file = new File("uploads/" + filename);
   if (file.exists()) {
     try {
       ctx.result(new FileInputStream(file));
@@ -308,7 +308,7 @@ public void getPhoto(Context ctx) {
     server.delete(API_HUNT, this::deleteHunt);
     server.delete(API_TASK, this::deleteTask);
     server.post(API_UPLOAD, this::uploadPhoto);
-    app.get("/photos/:id", this::getPhoto);
+    server.get(API_PHOTO, this::getPhoto);
 
   }
 }

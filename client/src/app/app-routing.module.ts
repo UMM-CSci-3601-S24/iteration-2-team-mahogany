@@ -6,6 +6,7 @@ import { HuntProfileComponent } from './hunts/hunt-profile.component';
 import { HuntCardComponent } from './hunts/hunt-card.component';
 import { AddHuntComponent } from './hunts/addHunt/add-hunt.component';
 import { AddPhotoComponent } from './hunts/addPhoto/add-photo.component';
+import { PhotoViewerComponent } from './photo-viewer/photo-viewer.component';
 
 
 // Note that the 'users/new' route needs to come before 'users/:id'.
@@ -17,8 +18,8 @@ const routes: Routes = [
   {path: 'hunts/new', component: AddHuntComponent, title: 'Add Hunt'},
   {path: 'hunts/:id', component: HuntProfileComponent, title: 'Hunts Profile'},
   {path: 'hunts', component: HuntCardComponent, title: 'Hunts'},
-  {path: 'photos', component: AddPhotoComponent, title: 'Add Photo'}
-];
+  {path: 'photos', component: AddPhotoComponent, title: 'Add Photo'},
+  {path : 'photo/:filename', component: PhotoViewerComponent, title: 'Photo Viewer'}];
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
