@@ -44,7 +44,8 @@ import io.javalin.validation.Validator;
 
 @SuppressWarnings({ "MagicNumber" })
 public class HuntControllerSpec {
-  private HuntController hostController;
+  private HuntController HuntController;
+  private TaskController TaskController;
   private ObjectId frysId;
   private ObjectId huntId;
   private ObjectId taskId;
