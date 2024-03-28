@@ -114,6 +114,22 @@ public class HuntInstanceController implements Controller {
     }
   }
 
+  public HuntInstance getHuntInstance(Context ctx) {
+    String id = ctx.pathParam("id");
+    HuntInstance huntinstance;
+
+    try {
+      huntinstance = huntInstanceCollection.find(eq("_id", new ObjectId(id))).first();
+    } catch (IllegalArgumentException e) {
+      throw new BadRequestResponse("The requested hunt id wasn't a legal Mongo Object ID.");
+    }
+    if (huntinstance == null) {
+      throw new NotFoundResponse("The requested hunt instance was not found");
+    } else {
+      return huntinstance;
+    }
+  }
+
   public void getHunts(Context ctx) {
     Bson combinedFilter = constructFilterHunts(ctx);
     Bson sortingOrder = constructSortingOrderHunts(ctx);
@@ -260,6 +276,7 @@ public class HuntInstanceController implements Controller {
   public void addRoutes(Javalin server) {
     server.get(API_HOST, this::getHunts);
     server.get(API_HUNT, this::getCompleteHunt);
+    server.get(API_HUNT_INSTANCE, this::getHuntInstance);
     server.post(API_HUNTS, this::addNewHunt);
     server.get(API_TASKS, this::getTasks);
     server.post(API_TASKS, this::addNewTask);
