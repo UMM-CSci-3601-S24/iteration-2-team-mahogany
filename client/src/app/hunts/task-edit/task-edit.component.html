@@ -1,11 +1,21 @@
-<div class="task-edit">
-  <h2>Edit Task</h2>
-
-  <form [formGroup]="taskForm" (ngSubmit)="onSubmit()">
-    <div class="form-group">
-      <label for="taskName">Task Name</label>
-      <input type="text" id="taskName" formControlName="name" class="form-control">
-    </div>
-    <button type="submit" class="btn btn-primary" [disabled]="!taskForm.valid">Update Task</button>
-  </form>
+<div class="flex-row">
+  <div class="flex-1">
+    @if(taskEdit) {
+      <form [formGroup]="taskForm" (ngSubmit)="onSubmit()">
+        <mat-form-field>
+          <mat-label>Name</mat-label>
+          <input type="text" id="taskName" formControlName="name" class="form-control" required>
+          @if (formControlHasError('name')) {
+            <mat-error data-test="nameError">
+              {{getErrorMessage('name')}}
+            </mat-error>
+          }
+        </mat-form-field>
+        <button (click)="onSubmit()" type="submit" class="btn btn-primary" [disabled]="!taskForm.valid">Update Task</button>
+      </form>
+    }
+    @else {
+      <button class="edit-task-button" mat-raised-button color="primary" (click)="this.taskEdit = true">EDIT TASK</button>
+    }
+  </div>
 </div>

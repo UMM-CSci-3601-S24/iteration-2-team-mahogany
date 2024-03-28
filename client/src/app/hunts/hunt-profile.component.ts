@@ -16,13 +16,15 @@ import { MatDialog } from '@angular/material/dialog';
 import { DeleteHuntDialogComponent } from './deleteHunt/delete-hunt-dialog.component';
 import { DeleteTaskDialogComponent } from './deleteTask/delete-task-dialog.component';
 import { RouterModule } from '@angular/router';
+import { HuntEditComponent } from './hunt-edit/hunt-edit.component';
+import { TaskEditComponent } from './task-edit/task-edit.component';
 
 @Component({
     selector: 'app-hunt-profile',
     templateUrl: './hunt-profile.component.html',
     styleUrls: ['./hunt-profile.component.scss'],
     standalone: true,
-    imports: [HuntCardComponent, MatCardModule, AddTaskComponent, MatDivider, MatIconButton, MatIcon, HttpClientModule, RouterModule]
+    imports: [HuntCardComponent, MatCardModule, HuntEditComponent, TaskEditComponent, AddTaskComponent, MatDivider, MatIconButton, MatIcon, HttpClientModule, RouterModule]
 })
 export class HuntProfileComponent implements OnInit, OnDestroy {
   confirmDeleteHunt: boolean =false;
@@ -99,6 +101,8 @@ export class HuntProfileComponent implements OnInit, OnDestroy {
       }
     });
   }
+
+  
 
   ngOnDestroy() {
     this.ngUnsubscribe.next();

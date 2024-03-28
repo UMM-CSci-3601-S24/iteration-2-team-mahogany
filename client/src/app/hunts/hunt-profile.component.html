@@ -10,9 +10,7 @@
           <div class="task-line">
             <li matListItemTitle mat-line class="task-list-name"> {{task.name}} </li>
             <div class="button-container" style="display: flex;">
-              <button mat-mini-fab class="edit-task-fab" color="warn" [routerLink]="['/tasks', task._id, 'edit']">
-                <mat-icon class="edit-icon">edit</mat-icon>
-              </button>
+              <app-task-edit class="edit-task-fab" data-test="editTaskButton" [huntId]="this.completeHunt.hunt._id"></app-task-edit>
               <button mat-fab class="remove-task-fab red-button" matTooltip="Remove Task" matTooltipPosition="left" (click)="openDeleteTaskDialog(task._id)" data-test="removeTaskButton">
                 <mat-icon class="remove-icon" aria-label="Remove Task">delete</mat-icon>
               </button>
@@ -62,3 +60,4 @@
   </mat-card>
   </div>
 </div>
+
