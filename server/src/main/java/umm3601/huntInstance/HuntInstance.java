@@ -1,4 +1,4 @@
-package umm3601.host;
+package umm3601.huntInstance;
 
 import java.util.Date;
 
@@ -6,7 +6,7 @@ import org.mongojack.Id;
 import org.mongojack.ObjectId;
 
 @SuppressWarnings({"VisibilityModifier"})
-public class HuntInstances {
+public class HuntInstance {
   @ObjectId @Id
   @SuppressWarnings({"MemberName"})
   public String _id;
