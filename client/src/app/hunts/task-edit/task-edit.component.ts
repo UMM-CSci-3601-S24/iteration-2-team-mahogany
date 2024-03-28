@@ -3,14 +3,16 @@ import { FormGroup, FormControl, FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HostService } from 'src/app/hosts/host.service';
 import { ReactiveFormsModule } from '@angular/forms'; // Move this import statement to the top of the file
-
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatButtonModule } from "@angular/material/button";
 
 @Component ({
   selector: 'app-task-edit',
   templateUrl: './task-edit.component.html',
   styleUrls: ['./task-edit.component.scss'], // Remove the comma here
   standalone: true,
-  imports: [ReactiveFormsModule] // Remove this line
+  imports: [ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatButtonModule] // Remove this line
 })
 export class TaskEditComponent implements OnInit {
   taskForm: FormGroup;
