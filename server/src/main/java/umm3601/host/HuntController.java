@@ -1,6 +1,7 @@
 package umm3601.host;
 
-import static com.mongodb.client.model.Filters.*;
+import static com.mongodb.client.model.Filters.and;
+import static com.mongodb.client.model.Filters.eq;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -150,7 +151,6 @@ public class HuntController implements Controller {
   public void getCompleteHunt(Context ctx) {
     CompleteHunt completeHunt = new CompleteHunt();
     completeHunt.hunt = getHunt(ctx);
-    
     ctx.json(completeHunt);
     ctx.status(HttpStatus.OK);
   }
