@@ -6,6 +6,9 @@ import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
 import io.javalin.http.NotFoundResponse;
 import umm3601.Controller;
+import java.util.logging.Logger;
+
+
 
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
@@ -15,12 +18,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+
 import org.bson.Document;
 import org.bson.UuidRepresentation;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.mongojack.JacksonMongoCollection;
 
+import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Sorts;
 import com.mongodb.client.result.DeleteResult;
@@ -32,9 +37,12 @@ public class HostController implements Controller {
   private static final String API_HUNTS = "/api/hunts";
   private static final String API_TASK = "/api/tasks/{id}";
   private static final String API_TASKS = "/api/tasks";
+  private static final String API_HuntInstance = "/api/HuntInstance";
 
   static final String HOST_KEY = "hostId";
   static final String HUNT_KEY = "huntId";
+  private static final Logger LOGGER = Logger.getLogger(HostController.class.getName());
+
 
   static final int REASONABLE_NAME_LENGTH_HUNT = 50;
   static final int REASONABLE_DESCRIPTION_LENGTH_HUNT = 200;
@@ -45,6 +53,8 @@ public class HostController implements Controller {
   private final JacksonMongoCollection<Host> hostCollection;
   private final JacksonMongoCollection<Hunt> huntCollection;
   private final JacksonMongoCollection<Task> taskCollection;
+  private final JacksonMongoCollection<HuntInstance> HuntInstanceCollection;
+
 
   public HostController(MongoDatabase database) {
     hostCollection = JacksonMongoCollection.builder().build(
@@ -62,7 +72,14 @@ public class HostController implements Controller {
       "tasks",
       Task.class,
        UuidRepresentation.STANDARD);
+    HuntInstanceCollection = JacksonMongoCollection.builder().build(
+      database,
+      "HuntInstance",
+      HuntInstance.class,
+       UuidRepresentation.STANDARD);
   }
+
+
 
   public void getHost(Context ctx) {
     String id = ctx.pathParam("id");
@@ -239,6 +256,60 @@ public class HostController implements Controller {
     ctx.status(HttpStatus.OK);
   }
 
+  public class HuntInstance {
+    private String huntId;
+    private List<String> submissions;
+
+    public HuntInstance(String huntId, List<String> submissions) {
+        this.huntId = huntId;
+        this.submissions = submissions;
+    }
+
+    public HuntInstance(ObjectId objectId, ObjectId objectId2, ArrayList<Task> arrayList) {
+      //TODO Auto-generated constructor stub
+    }
+
+    public String getHuntId() {
+        return huntId;
+    }
+    public String getId() {
+        return id.toHexString();
+    }
+
+    public List<String> getSubmissions() {
+        return submissions;
+    }
+}
+
+public static class HuntInstanceForm {
+  public String huntId;
+  public List<String> submissions;
+}
+
+public void createHuntInstance(Context ctx) {
+  LOGGER.info("Entering createHuntInstance method");
+  try {
+      HuntInstanceForm huntInstanceForm = ctx.bodyValidator(HuntInstanceForm.class)
+          .check(hi -> hi.huntId != null && hi.submissions != null, "huntId and submissions must not be null")
+          .get();
+
+      LOGGER.info("HuntInstanceForm: " + huntInstanceForm);
+
+      HuntInstance huntInstance = new HuntInstance(huntInstanceForm.huntId, huntInstanceForm.submissions);
+      HuntInstanceCollection.insertOne(huntInstance);
+
+      // The ID should now be set in the HuntInstance object
+      String id = huntInstance.getId();
+      LOGGER.info("Created HuntInstance with ID: " + id);
+
+
+      ctx.status(201);
+  } catch (Exception e) {
+      LOGGER.severe("Failed to create hunt instance: " + e.getMessage());
+      ctx.status(500);
+      ctx.json(Map.of("success", false, "message", "Failed to create hunt instance", "error", e.getMessage()));
+  }
+}
   @Override
   public void addRoutes(Javalin server) {
     server.get(API_HOST, this::getHunts);
@@ -248,5 +319,8 @@ public class HostController implements Controller {
     server.post(API_TASKS, this::addNewTask);
     server.delete(API_HUNT, this::deleteHunt);
     server.delete(API_TASK, this::deleteTask);
+    server.post(API_HuntInstance, this::createHuntInstance); // Corrected here
+
+
   }
 }

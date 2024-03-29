@@ -20,10 +20,19 @@ export class HostService {
   getHunts(hostId: string): Observable<Hunt[]> {
     return this.httpClient.get<Hunt[]>(`${this.hostUrl}/${hostId}`);
   }
-
   getHuntById(id: string): Observable<CompleteHunt> {
     return this.httpClient.get<CompleteHunt>(`${this.huntUrl}/${id}`);
   }
+
+  createHuntInstance(huntId: string): Observable<string> {
+    const huntInstance = {
+      huntId: huntId,
+      submissions: []
+    };
+
+    return this.httpClient.post<string>("/api/HuntInstance", huntInstance);
+  }
+
 
   addHunt(newHunt: Partial<Hunt>): Observable<string> {
     newHunt.hostId = "588945f57546a2daea44de7c";

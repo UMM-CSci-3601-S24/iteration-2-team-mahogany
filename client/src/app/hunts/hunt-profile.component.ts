@@ -65,6 +65,8 @@ export class HuntProfileComponent implements OnInit, OnDestroy {
     });
   }
 
+
+
   deleteTask(id: string): void {
     this.hostService.deleteTask(id).subscribe(() => {
       location.reload();
@@ -96,6 +98,15 @@ export class HuntProfileComponent implements OnInit, OnDestroy {
       if (result === 'confirm') {
         this.deleteTask(taskId);
       }
+    });
+  }
+
+  createHuntInstance(huntId: string): void {
+    console.log('Hunt ID:', huntId); // Add this line
+    this.hostService.createHuntInstance(huntId).subscribe((huntInstanceId: string) => {
+      console.log('Created hunt instance with ID:', huntInstanceId);
+    }, (error) => {
+      console.error('Error creating hunt instance:', error);
     });
   }
 
