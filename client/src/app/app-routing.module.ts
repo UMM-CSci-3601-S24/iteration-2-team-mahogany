@@ -7,6 +7,7 @@ import { HuntCardComponent } from './hunts/hunt-card.component';
 import { AddHuntComponent } from './hunts/addHunt/add-hunt.component';
 import { AddPhotoComponent } from './hunts/addPhoto/add-photo.component';
 import { PhotoViewerComponent } from './photo-viewer/photo-viewer.component';
+import { DeletePhotoComponent } from './hunts/deletePhoto/delete-photo.component';
 
 
 // Note that the 'users/new' route needs to come before 'users/:id'.
@@ -19,9 +20,11 @@ const routes: Routes = [
   {path: 'hunts/:id', component: HuntProfileComponent, title: 'Hunts Profile'},
   {path: 'hunts', component: HuntCardComponent, title: 'Hunts'},
   {path: 'photos', component: AddPhotoComponent, title: 'Add Photo'},
-  {path : 'photo/:filename', component: PhotoViewerComponent, title: 'Photo Viewer'}];
+  {path : 'photo/:filename', component: PhotoViewerComponent, title: 'Photo Viewer'},
+  {path: 'photos/delete', component: DeletePhotoComponent, title: 'Delete Photo'} // Remove the semicolon at the end of this line
+];
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class AppRoutingModule { }

@@ -123,6 +123,21 @@ public void getPhoto(Context ctx) {
   }
 }
 
+public void deletePhoto(Context ctx) {
+  String filename = ctx.pathParam("filename");
+  File file = new File("uploads/" + filename);
+  if (file.exists()) {
+      if (file.delete()) {
+          ctx.status(200).result("Photo deleted successfully");
+      } else {
+          ctx.status(500).result("Error deleting file");
+      }
+  } else {
+      ctx.status(404).result("Photo not found");
+  }
+
+}
+
   public void getHost(Context ctx) {
     String id = ctx.pathParam("id");
     Host host;
@@ -307,6 +322,7 @@ public void getPhoto(Context ctx) {
     server.post(API_TASKS, this::addNewTask);
     server.delete(API_HUNT, this::deleteHunt);
     server.delete(API_TASK, this::deleteTask);
+    server.delete(API_PHOTO, this::deletePhoto);
     server.post(API_UPLOAD, this::uploadPhoto);
     server.get(API_PHOTO, this::getPhoto);
 
