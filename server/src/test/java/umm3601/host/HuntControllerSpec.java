@@ -146,42 +146,6 @@ public class HuntControllerSpec {
 
     huntDocuments.insertMany(testHunts);
     huntDocuments.insertOne(hunt);
-
-    MongoCollection<Document> taskDocuments = db.getCollection("tasks");
-    taskDocuments.drop();
-    List<Document> testTasks = new ArrayList<>();
-    testTasks.add(
-      new Document()
-        .append("huntId", huntId.toHexString())
-        .append("name", "Take a picture of a cat")
-        .append("status", false));
-    testTasks.add(
-      new Document()
-        .append("huntId", huntId.toHexString())
-        .append("name", "Take a picture of a dog")
-        .append("status", false));
-    testTasks.add(
-      new Document()
-        .append("huntId", huntId.toHexString())
-        .append("name", "Take a picture of a park")
-        .append("status", true));
-    testTasks.add(
-      new Document()
-        .append("huntId", "differentId")
-        .append("name", "Take a picture of a moose")
-        .append("status", true));
-
-        taskId = new ObjectId();
-        Document task = new Document()
-          .append("_id", taskId)
-          .append("huntId", "someId")
-          .append("name", "Best Task")
-          .append("status", false);
-
-    taskDocuments.insertMany(testTasks);
-    taskDocuments.insertOne(task);
-
-    HuntController = new HuntController(db);
   }
 
   @Test
