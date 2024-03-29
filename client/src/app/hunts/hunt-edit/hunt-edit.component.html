@@ -1,19 +1,56 @@
-<div class="container">
-  <h1>Edit Hunt</h1>
-  <form [formGroup]="huntform" (ngSubmit)="onSubmit()">
-    <div class="form-group">
-      <label for="name">Hunt Name</label>
-      <input type="text" id="name" formControlName="name" class="form-control">
-    </div>
-    <div class="form-group">
-      <label for="description">Hunt Description</label>
-      <input type="text" id="description" formControlName="description" class="form-control">
-    </div>
-    <div class="form-group">
-      <label for="est">Estimated Time</label>
-      <input type="text" id="est" formControlName="est" class="form-control">
-    </div>
-    <button type="submit" class="btn btn-primary" [disabled]="huntform.invalid">Save</button>
-    <button type="button" class="btn btn-secondary" [routerLink]="['/hunts']">Cancel</button>
-  </form>
+<div class="hunt-edit">
+  <mat-card class="edit-card">
+    <mat-card-header>
+      <mat-card-title>Edit Hunt</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="huntForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label for="huntName">Hunt Name</label>
+          <mat-form-field class="edit-input-field">
+            <input  matInput id="name" formControlName="name" required class="center-text"
+              required>
+            @if (formControlHasError('name')) {
+              <mat-error data-test="nameError">
+                {{getErrorMessage('name')}}
+              </mat-error>
+            }
+          </mat-form-field>
+          <label for="Name">Hunt Description</label>
+          <mat-form-field class="edit-input-field">
+            <input  matInput id="description" formControlName="description" required class="center-text"
+              required>
+            @if (formControlHasError('description')) {
+              <mat-error data-test="descriptionError">
+                {{getErrorMessage('description')}}
+              </mat-error>
+            }
+          </mat-form-field>
+          <label for="Name">Estimated Time</label>
+          <mat-form-field class="edit-input-field">
+            <input  matInput id="est" formControlName="est" required class="center-text"
+              required>
+            @if (formControlHasError('est')) {
+              <mat-error data-test="estError">
+                {{getErrorMessage('est')}}
+              </mat-error>
+            }
+          </mat-form-field>
+        </div>
+        <mat-card-actions class="buttons">
+          <button class="cancel-button"
+            mat-button
+            color="warn"
+            type="cancel" [routerLink]="['/hunts', this.huntId]">
+            CANCEL
+          </button>
+          <button class="confirm-button"
+            mat-button 
+            type="submit" class="btn btn-primary" [disabled]="huntForm.invalid">
+            SAVE
+          </button>
+        </mat-card-actions>
+    </form>
+    </mat-card-content>
+  </mat-card>
 </div>
