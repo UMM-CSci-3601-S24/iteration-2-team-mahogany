@@ -18,17 +18,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-
+import org.bson.BsonValue;
 import org.bson.Document;
 import org.bson.UuidRepresentation;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.mongojack.JacksonMongoCollection;
+import org.mongojack.MongoCollectionDecorator;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Sorts;
 import com.mongodb.client.result.DeleteResult;
+import com.mongodb.client.result.InsertOneResult;
 
 public class HostController implements Controller {
 
@@ -54,7 +56,7 @@ public class HostController implements Controller {
   private final JacksonMongoCollection<Hunt> huntCollection;
   private final JacksonMongoCollection<Task> taskCollection;
   private final JacksonMongoCollection<HuntInstance> HuntInstanceCollection;
-  private final JacksonMongoCollection<Task> submissionsCollection;
+  private final JacksonMongoCollection<Submissions> submissionsCollection;
 
 
   public HostController(MongoDatabase database) {
@@ -78,10 +80,10 @@ public class HostController implements Controller {
       "HuntInstance",
       HuntInstance.class,
        UuidRepresentation.STANDARD);
-    submissionsCollection = JacksonMongoCollection.builder().build(
+      submissionsCollection = JacksonMongoCollection.builder().build(
       database,
       "submissions",
-      Task.class,
+      Submissions.class,
        UuidRepresentation.STANDARD);
   }
 
@@ -303,31 +305,35 @@ public void createHuntInstance(Context ctx) {
     LOGGER.info("HuntInstanceForm: " + huntInstanceForm);
 
     HuntInstance huntInstance = new HuntInstance(huntInstanceForm.huntId, new ArrayList<>());
-    LOGGER.info("Created HuntInstance: " + huntInstance);
+
+    // Insert the HuntInstance into the database first and get the result
+    InsertOneResult result = HuntInstanceCollection.insertOne(huntInstance);
+
+    // Retrieve the generated ID
+
+
+    String huntInstanceId = result.getInsertedId().asObjectId().getValue().toHexString();
 
     ArrayList<Task> matchingTasks = taskCollection
       .find(eq(HUNT_KEY, huntInstanceForm.huntId))
       .into(new ArrayList<>());
 
-    LOGGER.info("Matching tasks: " + matchingTasks);
-
     for (Task task : matchingTasks) {
-      Task instancedTask = new Task();
-      instancedTask.huntId = huntInstance.getId();
-      instancedTask.name = task.name;
-      instancedTask.status = task.status;
+      Submissions instancedSubmission = new Submissions();
+      instancedSubmission.huntInstanceId = huntInstanceId; // Use the HuntInstance ID
+      instancedSubmission.name = task.name;
+      instancedSubmission.status = task.status;
 
-      submissionsCollection.insertOne(instancedTask);
-      String instancedTaskId = instancedTask.getId();
+      submissionsCollection.insertOne(instancedSubmission);
+      String instancedSubmissionId = instancedSubmission.getId();
 
-      huntInstance.getSubmissions().add(instancedTaskId);
+      huntInstance.getSubmissions().add(instancedSubmissionId);
     }
 
-    HuntInstanceCollection.insertOne(huntInstance);
-    LOGGER.info("Inserted HuntInstance into collection");
+    // Update the HuntInstance in the HuntInstanceCollection
+    HuntInstanceCollection.updateOne(eq("_id", new ObjectId(huntInstanceId)), new Document("$set", new Document("submissions", huntInstance.getSubmissions())));
 
-    String id = huntInstance.getId();
-    LOGGER.info("Created HuntInstance with ID: " + id);
+    LOGGER.info("Created HuntInstance with ID: " + huntInstanceId);
 
     ctx.status(201);
   } catch (Exception e) {

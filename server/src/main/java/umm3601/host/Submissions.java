@@ -1,7 +1,6 @@
 package umm3601.host;
 
 public class Submissions {
-  @ObjectId @Id
   @SuppressWarnings({"MemberName"})
   public String _id;
 
