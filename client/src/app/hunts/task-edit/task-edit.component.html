@@ -1,5 +1,5 @@
 <div class="task-edit">
-  <mat-card>
+  <mat-card class="edit-card">
     <mat-card-header>
       <mat-card-title>Edit Task</mat-card-title>
     </mat-card-header>
@@ -7,24 +7,30 @@
       <form [formGroup]="taskForm" (ngSubmit)="onSubmit()">
         <div class="form-group">
           <label for="taskName">Task Name</label>
-              <mat-form-field>
-                <mat-label>Task Name</mat-label>
-                <input type="text" id="taskName" formControlName="name" class="form-control" >
-              </mat-form-field>
+          <mat-form-field class="edit-input-field">
+            <input  matInput formControlName="name" required class="center-text"
+              required>
+            @if (formControlHasError('name')) {
+              <mat-error data-test="nameError">
+                {{getErrorMessage('name')}}
+              </mat-error>
+            }
+          </mat-form-field>
         </div>
-      </form>
       <mat-card-actions class="buttons">
         <button class="cancel-button"
           mat-button
-          type="submit" class="btn btn-primary" [disabled]="!taskForm.valid">
+          color="warn"
+          type="cancel" [routerLink]="['/hosts']">
           CANCEL
         </button>
-        <button class="edit-button"
+        <button class="confirm-button"
           mat-button 
           type="submit" class="btn btn-primary" [disabled]="!taskForm.valid">
-          EDIT TASK
+          SAVE
         </button>
       </mat-card-actions>
+    </form>
     </mat-card-content>
   </mat-card>
 </div>
