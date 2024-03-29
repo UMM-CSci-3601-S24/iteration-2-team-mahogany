@@ -7,8 +7,13 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { MatSelectModule } from "@angular/material/select";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { RouterLink } from "@angular/router";
+import { ActivatedRoute, ParamMap, RouterLink } from "@angular/router";
 import { HostService } from "src/app/hosts/host.service";
+import { CompleteHunt } from "../completeHunt";
+import { HuntCardComponent } from "../hunt-card.component";
+import { map } from "rxjs/internal/operators/map";
+import { Subject, switchMap, takeUntil } from "rxjs";
+
 
 
 
@@ -17,14 +22,20 @@ import { HostService } from "src/app/hosts/host.service";
     templateUrl: './add-task.component.html',
     styleUrls: ['./add-task.component.scss'],
     standalone: true,
-    imports: [FormsModule, ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatOptionModule, MatButtonModule, RouterLink],
+    imports: [HuntCardComponent, FormsModule, ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatOptionModule, MatButtonModule, RouterLink],
     providers: [HostService]
 })
+
+
+
 export class AddTaskComponent {
 
 
   huntId = input.required<string>();
   addTask: boolean = false;
+  completeHunt: CompleteHunt;
+  error: { help: string, httpResponse: string, message: string };
+  private ngUnsubscribe = new Subject<void>();
 
   addTaskForm = new FormGroup({
     huntId: new FormControl(),
@@ -37,6 +48,31 @@ export class AddTaskComponent {
     ])),
   });
 
+  ngOnInit(): void {
+
+    this.route.paramMap.pipe(
+
+      map((paramMap: ParamMap) => paramMap.get('id')),
+
+      switchMap((id: string) => this.hostService.getHuntById(id)),
+
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe({
+      next: completeHunt => {
+        this.completeHunt = completeHunt;
+        return ;
+      },
+      error: _err => {
+        this.error = {
+          help: 'There was a problem loading the hunt – try again.',
+          httpResponse: _err.message,
+          message: _err.error?.title,
+        };
+      }
+
+    });
+  }
+
   readonly addTaskValidationMessages = {
     name: [
       { type: 'required', message: 'Name is required' },
@@ -47,10 +83,19 @@ export class AddTaskComponent {
 
   constructor(
     private hostService: HostService,
-    private snackBar: MatSnackBar,) {
+    private snackBar: MatSnackBar,
+    private route: ActivatedRoute,) {
   }
 
-  
+  createHuntInstance(huntId: string): void {
+    console.log('Hunt ID:', huntId); // Add this line
+    this.hostService.createHuntInstance(huntId).subscribe((huntInstanceId: string) => {
+      console.log('Created hunt instance with ID:', huntInstanceId);
+    }, (error) => {
+      console.error('Error creating hunt instance:', error);
+    });
+  }
+
 
   formControlHasError(controlName: string): boolean {
     return this.addTaskForm.get(controlName).invalid &&
@@ -87,4 +132,6 @@ export class AddTaskComponent {
       },
     });
   }
+
+
 }
