@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router, RouterLink } from '@angular/router';
 import { Subject } from 'rxjs';
 import { map, switchMap, takeUntil } from 'rxjs/operators';
 import { HuntCardComponent } from './hunt-card.component';
@@ -21,7 +21,7 @@ import { DeleteTaskDialogComponent } from './deleteTask/delete-task-dialog.compo
     templateUrl: './hunt-profile.component.html',
     styleUrls: ['./hunt-profile.component.scss'],
     standalone: true,
-    imports: [HuntCardComponent, MatCardModule, AddTaskComponent, MatDivider, MatIconButton, MatIcon, HttpClientModule]
+    imports: [HuntCardComponent, MatCardModule, AddTaskComponent, MatDivider, MatIconButton, MatIcon, HttpClientModule, RouterLink]
 })
 export class HuntProfileComponent implements OnInit, OnDestroy {
   confirmDeleteHunt: boolean =false;
