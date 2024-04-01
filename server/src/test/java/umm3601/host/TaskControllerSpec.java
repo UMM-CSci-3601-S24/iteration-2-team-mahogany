@@ -19,8 +19,10 @@ import java.util.Map;
 
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import org.junit.jupiter.api.AfterAll;
 //import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 //import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -28,6 +30,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 //import org.mockito.MockitoAnnotations;
+import org.mockito.MockitoAnnotations;
 
 import com.mongodb.MongoClientSettings;
 import com.mongodb.ServerAddress;
@@ -48,7 +51,7 @@ import io.javalin.validation.ValidationException;
 
 @SuppressWarnings({ "MagicNumber" })
 public class TaskControllerSpec {
-  private TaskController TaskController;
+  private TaskController taskController;
   private ObjectId huntId;
   private ObjectId taskId;
 
@@ -81,6 +84,16 @@ public class TaskControllerSpec {
         .build());
       db = mongoClient.getDatabase("test");
   }
+
+    @AfterAll
+  static void teardown() {
+    db.drop();
+    mongoClient.close();
+  }
+
+    @BeforeEach
+  void setupEach() throws IOException {
+    MockitoAnnotations.openMocks(this);
 
   MongoCollection<Document> taskDocuments = db.getCollection("tasks"); {
   taskDocuments.drop();
@@ -116,13 +129,13 @@ public class TaskControllerSpec {
   taskDocuments.insertMany(testTasks);
   taskDocuments.insertOne(task);
 
-  TaskController = new TaskController(db);
+  taskController = new TaskController(db);
   }
 
-    @Test
+  @Test
   void addRoutes() {
     Javalin mockServer = mock(Javalin.class);
-    TaskController.addRoutes(mockServer);
+    taskController.addRoutes(mockServer);
     verify(mockServer, Mockito.atLeast(1)).get(any(), any());
   }
 
@@ -132,7 +145,7 @@ public class TaskControllerSpec {
     String id = huntId.toHexString();
     when(ctx.pathParam("id")).thenReturn(id);
 
-    ArrayList<Task> tasks = TaskController.getTasks(ctx);
+    ArrayList<Task> tasks = taskController.getTasks(ctx);
 
     assertEquals(3, tasks.size());
     for (Task task : tasks) {
@@ -145,7 +158,7 @@ public class TaskControllerSpec {
     String testHuntId = huntId.toHexString();
     assertEquals(3, db.getCollection("hunts").find(eq("_id", new ObjectId(testHuntId))).first().get("numberOfTasks"));
 
-    TaskController.increaseTaskCount(testHuntId);
+    taskController.increaseTaskCount(testHuntId);
 
     Document hunt = db.getCollection("hunts").find(eq("_id", new ObjectId(testHuntId))).first();
     assertEquals(4, hunt.get("numberOfTasks"));
@@ -156,7 +169,7 @@ public class TaskControllerSpec {
     String testHuntId = huntId.toHexString();
     assertEquals(3, db.getCollection("hunts").find(eq("_id", new ObjectId(testHuntId))).first().get("numberOfTasks"));
 
-    TaskController.decreaseTaskCount(testHuntId);
+    taskController.decreaseTaskCount(testHuntId);
 
     Document hunt = db.getCollection("hunts").find(eq("_id", new ObjectId(testHuntId))).first();
     assertEquals(2, hunt.get("numberOfTasks"));
@@ -174,7 +187,7 @@ public class TaskControllerSpec {
     when(ctx.bodyValidator(Task.class))
         .then(value -> new BodyValidator<Task>(testNewTask, Task.class, javalinJackson));
 
-    TaskController.addNewTask(ctx);
+    taskController.addNewTask(ctx);
     verify(ctx).json(mapCaptor.capture());
 
     verify(ctx).status(HttpStatus.CREATED);
@@ -201,7 +214,7 @@ public class TaskControllerSpec {
         .then(value -> new BodyValidator<Task>(testNewTask, Task.class, javalinJackson));
 
     assertThrows(ValidationException.class, () -> {
-      TaskController.addNewTask(ctx);
+      taskController.addNewTask(ctx);
     });
   }
 
@@ -218,7 +231,7 @@ public class TaskControllerSpec {
         .then(value -> new BodyValidator<Task>(testNewTask, Task.class, javalinJackson));
 
     assertThrows(ValidationException.class, () -> {
-      TaskController.addNewTask(ctx);
+      taskController.addNewTask(ctx);
     });
   }
 
@@ -235,7 +248,7 @@ public class TaskControllerSpec {
         .then(value -> new BodyValidator<Task>(testNewTask, Task.class, javalinJackson));
 
     assertThrows(ValidationException.class, () -> {
-      TaskController.addNewTask(ctx);
+      taskController.addNewTask(ctx);
     });
   }
 
@@ -253,7 +266,7 @@ public class TaskControllerSpec {
         .then(value -> new BodyValidator<Task>(testNewTask, Task.class, javalinJackson));
 
     assertThrows(ValidationException.class, () -> {
-      TaskController.addNewTask(ctx);
+      taskController.addNewTask(ctx);
     });
   }
 
@@ -270,7 +283,7 @@ public class TaskControllerSpec {
         .then(value -> new BodyValidator<Task>(testNewTask, Task.class, javalinJackson));
 
     assertThrows(ValidationException.class, () -> {
-      TaskController.addNewTask(ctx);
+      taskController.addNewTask(ctx);
     });
   }
 
@@ -281,7 +294,7 @@ public class TaskControllerSpec {
 
     assertEquals(1, db.getCollection("tasks").countDocuments(eq("_id", new ObjectId(testID))));
 
-    TaskController.deleteTask(ctx);
+    taskController.deleteTask(ctx);
 
     verify(ctx).status(HttpStatus.OK);
 
@@ -293,11 +306,11 @@ public class TaskControllerSpec {
     String testID = taskId.toHexString();
     when(ctx.pathParam("id")).thenReturn(testID);
 
-    TaskController.deleteTask(ctx);
+    taskController.deleteTask(ctx);
     assertEquals(0, db.getCollection("tasks").countDocuments(eq("_id", new ObjectId(testID))));
 
     assertThrows(NotFoundResponse.class, () -> {
-      TaskController.deleteTask(ctx);
+      taskController.deleteTask(ctx);
     });
 
     verify(ctx).status(HttpStatus.NOT_FOUND);
@@ -311,7 +324,7 @@ public class TaskControllerSpec {
 
     assertEquals(3, db.getCollection("tasks").countDocuments(eq("huntId", testID)));
 
-    TaskController.deleteTasks(ctx);
+    taskController.deleteTasks(ctx);
 
     assertEquals(0, db.getCollection("tasks").countDocuments(eq("huntId", testID)));
   }

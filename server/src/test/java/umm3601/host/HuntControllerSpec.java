@@ -48,7 +48,7 @@ import io.javalin.validation.Validator;
 
 @SuppressWarnings({ "MagicNumber" })
 public class HuntControllerSpec {
-  private HuntController HuntController;
+  private HuntController huntController;
   private ObjectId frysId;
   private ObjectId huntId;
 
@@ -61,9 +61,6 @@ public class HuntControllerSpec {
 
   @Captor
   private ArgumentCaptor<ArrayList<Hunt>> huntArrayListCaptor;
-
-  @Captor
-  private ArgumentCaptor<ArrayList<Task>> taskArrayListCaptor;
 
   @Captor
   private ArgumentCaptor<Host> hostCaptor;
@@ -154,7 +151,7 @@ public class HuntControllerSpec {
   @Test
   void addRoutes() {
     Javalin mockServer = mock(Javalin.class);
-    HuntController.addRoutes(mockServer);
+    huntController.addRoutes(mockServer);
     verify(mockServer, Mockito.atLeast(1)).get(any(), any());
   }
 
@@ -163,7 +160,7 @@ public class HuntControllerSpec {
     String id = frysId.toHexString();
     when(ctx.pathParam("id")).thenReturn(id);
 
-    HuntController.getHost(ctx);
+    huntController.getHost(ctx);
 
     verify(ctx).json(hostCaptor.capture());
     verify(ctx).status(HttpStatus.OK);
@@ -177,7 +174,7 @@ public class HuntControllerSpec {
     when(ctx.pathParam("id")).thenReturn("bad");
 
     Throwable exception = assertThrows(BadRequestResponse.class, () -> {
-      HuntController.getHost(ctx);
+      huntController.getHost(ctx);
     });
 
     assertEquals("The requested host id wasn't a legal Mongo Object ID.", exception.getMessage());
@@ -189,7 +186,7 @@ public class HuntControllerSpec {
     when(ctx.pathParam("id")).thenReturn(id);
 
     Throwable exception = assertThrows(NotFoundResponse.class, () -> {
-      HuntController.getHost(ctx);
+      huntController.getHost(ctx);
     });
 
     assertEquals("The requested host was not found", exception.getMessage());
@@ -203,7 +200,7 @@ public class HuntControllerSpec {
     when(ctx.queryParamAsClass("hostId", String.class))
     .thenReturn(Validator.create(String.class, "frysId", "hostId"));
 
-    HuntController.getHunts(ctx);
+    huntController.getHunts(ctx);
 
     verify(ctx).json(huntArrayListCaptor.capture());
     verify(ctx).status(HttpStatus.OK);
@@ -219,7 +216,7 @@ public class HuntControllerSpec {
     String id = huntId.toHexString();
     when(ctx.pathParam("id")).thenReturn(id);
 
-    Hunt hunt = HuntController.getHunt(ctx);
+    Hunt hunt = huntController.getHunt(ctx);
 
     assertEquals("Best Hunt", hunt.name);
     assertEquals(huntId.toHexString(), hunt._id);
@@ -230,7 +227,7 @@ public class HuntControllerSpec {
     when(ctx.pathParam("id")).thenReturn("bad");
 
     Throwable exception = assertThrows(BadRequestResponse.class, () -> {
-      HuntController.getHunt(ctx);
+      huntController.getHunt(ctx);
     });
 
     assertEquals("The requested hunt id wasn't a legal Mongo Object ID.", exception.getMessage());
@@ -242,7 +239,7 @@ public class HuntControllerSpec {
     when(ctx.pathParam("id")).thenReturn(id);
 
     Throwable exception = assertThrows(NotFoundResponse.class, () -> {
-      HuntController.getHunt(ctx);
+      huntController.getHunt(ctx);
     });
 
     assertEquals("The requested hunt was not found", exception.getMessage());
@@ -262,7 +259,7 @@ public class HuntControllerSpec {
     when(ctx.bodyValidator(Hunt.class))
         .then(value -> new BodyValidator<Hunt>(testNewHunt, Hunt.class, javalinJackson));
 
-    HuntController.addNewHunt(ctx);
+    huntController.addNewHunt(ctx);
     verify(ctx).json(mapCaptor.capture());
 
     verify(ctx).status(HttpStatus.CREATED);
@@ -293,7 +290,7 @@ public class HuntControllerSpec {
         .then(value -> new BodyValidator<Hunt>(testNewHunt, Hunt.class, javalinJackson));
 
     assertThrows(ValidationException.class, () -> {
-      HuntController.addNewHunt(ctx);
+      huntController.addNewHunt(ctx);
     });
   }
 
@@ -312,7 +309,7 @@ public class HuntControllerSpec {
         .then(value -> new BodyValidator<Hunt>(testNewHunt, Hunt.class, javalinJackson));
 
     assertThrows(ValidationException.class, () -> {
-      HuntController.addNewHunt(ctx);
+      huntController.addNewHunt(ctx);
     });
   }
 
@@ -331,7 +328,7 @@ public class HuntControllerSpec {
         .then(value -> new BodyValidator<Hunt>(testNewHunt, Hunt.class, javalinJackson));
 
     assertThrows(ValidationException.class, () -> {
-      HuntController.addNewHunt(ctx);
+      huntController.addNewHunt(ctx);
     });
   }
 
@@ -350,7 +347,7 @@ public class HuntControllerSpec {
         .then(value -> new BodyValidator<Hunt>(testNewHunt, Hunt.class, javalinJackson));
 
     assertThrows(ValidationException.class, () -> {
-      HuntController.addNewHunt(ctx);
+      huntController.addNewHunt(ctx);
     });
   }
 
@@ -370,7 +367,7 @@ public class HuntControllerSpec {
         .then(value -> new BodyValidator<Hunt>(testNewHunt, Hunt.class, javalinJackson));
 
     assertThrows(ValidationException.class, () -> {
-      HuntController.addNewHunt(ctx);
+      huntController.addNewHunt(ctx);
     });
   }
 
@@ -389,7 +386,7 @@ public class HuntControllerSpec {
         .then(value -> new BodyValidator<Hunt>(testNewHunt, Hunt.class, javalinJackson));
 
     assertThrows(ValidationException.class, () -> {
-      HuntController.addNewHunt(ctx);
+      huntController.addNewHunt(ctx);
     });
   }
 
@@ -400,7 +397,7 @@ public class HuntControllerSpec {
 
     assertEquals(1, db.getCollection("hunts").countDocuments(eq("_id", new ObjectId(testID))));
 
-    HuntController.deleteHunt(ctx);
+    huntController.deleteHunt(ctx);
 
     verify(ctx).status(HttpStatus.OK);
 
@@ -412,11 +409,11 @@ public class HuntControllerSpec {
     String testID = huntId.toHexString();
     when(ctx.pathParam("id")).thenReturn(testID);
 
-    HuntController.deleteHunt(ctx);
+    huntController.deleteHunt(ctx);
     assertEquals(0, db.getCollection("hunts").countDocuments(eq("_id", new ObjectId(testID))));
 
     assertThrows(NotFoundResponse.class, () -> {
-      HuntController.deleteHunt(ctx);
+      huntController.deleteHunt(ctx);
     });
 
     verify(ctx).status(HttpStatus.NOT_FOUND);
@@ -428,7 +425,7 @@ public class HuntControllerSpec {
     String id = huntId.toHexString();
     when(ctx.pathParam("id")).thenReturn(id);
 
-    HuntController.getCompleteHunt(ctx);
+    huntController.getCompleteHunt(ctx);
 
     verify(ctx).json(completeHuntCaptor.capture());
     verify(ctx).status(HttpStatus.OK);
@@ -447,7 +444,7 @@ public class HuntControllerSpec {
     when(ctx.pathParam("id")).thenReturn("bad");
 
     Throwable exception = assertThrows(BadRequestResponse.class, () -> {
-      HuntController.getCompleteHunt(ctx);
+      huntController.getCompleteHunt(ctx);
     });
 
     assertEquals("The requested hunt id wasn't a legal Mongo Object ID.", exception.getMessage());
