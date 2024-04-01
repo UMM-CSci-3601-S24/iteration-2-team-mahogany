@@ -5,10 +5,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.startsWith;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,6 +45,7 @@ import io.javalin.http.BadRequestResponse;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
 import io.javalin.http.NotFoundResponse;
+import io.javalin.http.UploadedFile;
 import io.javalin.json.JavalinJackson;
 import io.javalin.validation.BodyValidator;
 import io.javalin.validation.ValidationException;
@@ -52,6 +57,7 @@ public class HostControllerSpec {
   private ObjectId frysId;
   private ObjectId huntId;
   private ObjectId taskId;
+  private UploadedFile uploadedFile;
 
   private static MongoClient mongoClient;
   private static MongoDatabase db;
@@ -91,6 +97,18 @@ public class HostControllerSpec {
     db.drop();
     mongoClient.close();
   }
+
+  @BeforeEach
+    public void setup() {
+        ctx = mock(Context.class);
+        uploadedFile = mock(UploadedFile.class);
+        hostController = new HostController(db);
+        when(ctx.status(anyInt())).thenReturn(ctx);
+        when(ctx.result(anyString())).thenReturn(ctx);
+    when(ctx.uploadedFile("photo")).thenReturn(uploadedFile);
+    when(uploadedFile.content()).thenReturn(new ByteArrayInputStream(new byte[0]));
+    when(uploadedFile.filename()).thenReturn("test.jpg");
+      }
 
   @BeforeEach
   void setupEach() throws IOException {
@@ -698,4 +716,16 @@ public class HostControllerSpec {
 
     assertEquals(0, db.getCollection("tasks").countDocuments(eq("huntId", testID)));
   }
+
+  @Test
+    public void testUploadPhotoSuccess() throws Exception {
+        when(ctx.uploadedFile("photo")).thenReturn(uploadedFile);
+        when(uploadedFile.content()).thenReturn(new ByteArrayInputStream(new byte[0]));
+        when(uploadedFile.filename()).thenReturn("test.jpg");
+
+        hostController.uploadPhoto(ctx);
+
+        verify(ctx).status(200);
+        verify(ctx).result(startsWith("Photo uploaded successfully with ID: "));
+    }
 }
