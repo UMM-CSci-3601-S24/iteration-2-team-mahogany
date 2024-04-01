@@ -6,6 +6,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatButtonModule } from "@angular/material/button";
 import { MatInputModule } from '@angular/material/input';
+import { CompleteHunt } from '../completeHunt';
 
 @Component ({
   selector: 'app-hunt-edit',
@@ -15,6 +16,7 @@ import { MatInputModule } from '@angular/material/input';
   imports: [ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatButtonModule, FormsModule, MatInputModule, RouterLink]
 })
 export class HuntEditComponent implements OnInit {
+  completeHunt: CompleteHunt;
   huntForm: FormGroup;
   huntId: string;
 

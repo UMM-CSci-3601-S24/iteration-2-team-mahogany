@@ -8,20 +8,29 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { throwError } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { MockHostService } from 'src/testing/host.service.mock';
 import { HostService } from 'src/app/hosts/host.service';
 import { HuntProfileComponent } from '../hunt-profile.component';
 import { HuntEditComponent } from './hunt-edit.component';
 import { input } from '@angular/core';
+import { ActivatedRouteStub } from 'src/testing/activated-route-stub';
+
 
 
 describe('HuntEditComponent', () => {
   let huntEditComponent: HuntEditComponent;
   let huntForm: FormGroup;
+  const mockHostService = new MockHostService();
   let fixture: ComponentFixture<HuntEditComponent>;
+  const huntId = 'hunt_id';
+  const chrisId = 'chris_id';
+  const activatedRoute: ActivatedRouteStub = new ActivatedRouteStub({
+    getHunts: () => of(MockHostService.testHunts),
+  });
+  
 
   beforeEach(waitForAsync(() => {
     TestBed.overrideProvider(HostService, { useValue: new MockHostService() });
@@ -37,6 +46,13 @@ describe('HuntEditComponent', () => {
         BrowserAnimationsModule,
         RouterTestingModule,
         HuntEditComponent
+      ],
+      providers: [
+        { provide: HostService, useValue: mockHostService },
+        { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({ id: chrisId })
+            }
+          }
+        }
       ]
     }).compileComponents().catch(error => {
       expect(error).toBeNull();
@@ -50,6 +66,7 @@ describe('HuntEditComponent', () => {
     huntForm = huntEditComponent.huntForm;
     expect(huntForm).toBeDefined();
     expect(huntForm.controls).toBeDefined();
+    activatedRoute.setParamMap({ activatedRoute });
   });
 
   it('should create the component and form', () => {
@@ -66,6 +83,7 @@ describe('HuntEditComponent', () => {
 
     beforeEach(() => {
       nameControl = huntEditComponent.huntForm.controls.name;
+      activatedRoute.setParamMap({ id: chrisId});
     });
 
     it('should not allow empty names', () => {
@@ -88,13 +106,18 @@ describe('HuntEditComponent', () => {
       nameControl.setValue('Bad2Th3B0ne');
       expect(nameControl.valid).toBeTruthy();
     });
+
+    it('should have `null` for the hunt for a bad ID', () => {
+      activatedRoute.setParamMap({ id: 'badID' });
+      expect(huntEditComponent.completeHunt).toBeUndefined();
+    });
   });
 
   describe('getErrorMessage()', () => {
     it('should return the correct error message', () => {
       const controlName: keyof typeof huntEditComponent.editHuntValidationMessages = 'name';
       huntEditComponent.huntForm.get(controlName).setErrors({'required': true});
-      expect(huntEditComponent.getErrorMessage(controlName)).toEqual('Name is required');
+      expect(huntEditComponent.getErrorMessage(controlName)).toEqual('Hunt Name is required');
     });
 
     it('should return "Unknown error" if no error message is found', () => {
@@ -104,77 +127,3 @@ describe('HuntEditComponent', () => {
     });
   });
 });
-
-describe('HuntEditComponent#submitForm()', () => {
-  let component: HuntEditComponent;
-  let fixture: ComponentFixture<HuntEditComponent>;
-  let hostService: HostService;
-  let location: Location;
-
-  beforeEach(() => {
-    TestBed.overrideProvider(HostService, { useValue: new MockHostService() });
-    TestBed.configureTestingModule({
-    imports: [
-        ReactiveFormsModule,
-        MatSnackBarModule,
-        MatCardModule,
-        MatSelectModule,
-        MatInputModule,
-        BrowserAnimationsModule,
-        HttpClientTestingModule,
-        HuntEditComponent, HuntProfileComponent
-    ],
-}).compileComponents().catch(error => {
-      expect(error).toBeNull();
-    });
-  });
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(HuntEditComponent);
-    component = fixture.componentInstance;
-    hostService = TestBed.inject(HostService);
-    location = TestBed.inject(Location);
-    TestBed.inject(Router);
-    TestBed.inject(HttpTestingController);
-    fixture.detectChanges();
-  });
-
-  // beforeEach(() => {
-  //   component.huntForm.controls.name.setValue('Take a picture of a dog');
-  //   component.huntForm.controls.huntId.setValue('1');
-  //   component.huntId = input('1');
-  // });
-
-  // it('should call huntEdit() and handle error response', () => {
-  //   const path = location.path();
-  //   const errorResponse = { status: 500, message: 'Server error' };
-  //   const huntEditSpy = spyOn(hostService, 'huntEdit')
-  //     .and
-  //     .returnValue(throwError(() => errorResponse));
-  //   component.submitForm();
-  //   expect(huntEditSpy).toHaveBeenCalledWith(component.huntForm.value);
-  //   expect(location.path()).toBe(path);
-  // });
-
-
-  // it('should return true when the control is invalid and either dirty or touched', () => {
-  //   const controlName = 'name';
-  //   component.huntForm.get(controlName).setValue('');
-  //   component.huntForm.get(controlName).markAsDirty();
-  //   expect(component.formControlHasError(controlName)).toBeTruthy();
-  // });
-
-  // it('should return false when the control is valid', () => {
-  //   const controlName = 'name';
-  //   component.huntForm.get(controlName).setValue('Valid Name');
-  //   expect(component.formControlHasError(controlName)).toBeFalsy();
-  // });
-
-  // it('should return false when the control is invalid but not dirty or touched', () => {
-  //   const controlName = 'name';
-  //   component.huntForm.get(controlName).setValue('');
-  //   expect(component.formControlHasError(controlName)).toBeFalsy();
-  // });
-
-});
-

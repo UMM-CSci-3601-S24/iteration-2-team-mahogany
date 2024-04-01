@@ -177,3 +177,37 @@ describe('DeleteHunt()', () => {
 });
 
 
+// component.completeHunt = {
+//   hunt: {
+//     _id: "jan_id",
+//     hostId: "jan_hid",
+//     name: "Jans Hunt",
+//     description: "super fun and exciting hunt",
+//     est: 60,
+//     numberOfTasks: 4,
+//   },
+//  tasks: [ {
+//     "_id": "588933f57556a3daea54de8c",
+//     "huntId": "jan_id",
+//     "name": "Take a picture of a red car",
+//     "status": false
+//   },
+//   {
+//     "_id": "588535f57556a3daea54de8c",
+//     "huntId": "jan_id",
+//     "name": "Take a picture of a slide",
+//     "status": false
+//   },
+//   {
+//     "_id": "583935f57556a3daea54de8c",
+//     "huntId": "jan_id",
+//     "name": "Take a picture of a Yield sign",
+//     "status": false
+//   },
+//   {
+//     "_id": "548935f57556a3daea54de8c",
+//     "huntId": "jan_id",
+//     "name": "Take a picture of a football field",
+//     "status": false
+//   }]
+// };
