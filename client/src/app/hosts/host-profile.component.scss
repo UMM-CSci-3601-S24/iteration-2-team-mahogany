@@ -2,6 +2,13 @@
   position: fixed;
   bottom: 16px;
   right: 16px;
+  background-color: #007BFF;
+}
+
+.hunt-list-title {
+  font-size: 30px;
+  filter: invert(1);
+  mix-blend-mode: difference;
 }
 
 .hunt-cards-container {
@@ -34,6 +41,17 @@
   gap: 8px;
   padding: 16px;
   border-radius: 8px;
-  box-shadow: 0 0 8px 0 rgba(0, 0, 0, 0.2);
-  background-color: black;
+  box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: space-between;
+  border: 1px solid #01b5ec;
+  box-shadow: 0 0 5px 0 #1128f8;
+}
+.header-content {
+  display: flex;
+  justify-content: space-between;
+}
+
+.username-content {
+  text-align: right;
 }

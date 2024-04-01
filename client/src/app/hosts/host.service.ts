@@ -40,6 +40,7 @@ export class HostService {
     return this.httpClient.post<{id: string}>(this.taskUrl, newTask).pipe(map(res => res.id));
   }
 
+
   editHunt(id: string, updatedHunt: { name: string; description: string; est: number; }): Observable<Hunt> {
     console.log("Editing hunt with id: " + id);
     console.log(this.huntUrl + "/" + id);
@@ -52,6 +53,10 @@ export class HostService {
   }
   deleteHunt(id: string): Observable<void> {
     return this.httpClient.delete<void>(`/api/hunts/${id}`);
+  }
+
+  deleteTask(id: string): Observable<void> {
+    return this.httpClient.delete<void>(`/api/tasks/${id}`);
   }
 
 }

@@ -28,10 +28,10 @@ import com.mongodb.client.result.DeleteResult;
 
 public class HostController implements Controller {
 
-  private static final String API_HOST_BY_ID = "/api/hosts/{id}";
+  private static final String API_HOST = "/api/hosts/{id}";
   private static final String API_HUNT = "/api/hunts/{id}";
   private static final String API_HUNTS = "/api/hunts";
-  private static final String API_HUNT_BY_ID = "/api/hunts/{id}";
+  private static final String API_TASK = "/api/tasks/{id}";
   private static final String API_TASKS = "/api/tasks";
   private static final String API_TASKS_BY_ID = "/api/tasks/{id}";
 
@@ -192,8 +192,18 @@ public class HostController implements Controller {
     .get();
 
     taskCollection.insertOne(newTask);
+    increaseTaskCount(newTask.huntId);
     ctx.json(Map.of("id", newTask._id));
     ctx.status(HttpStatus.CREATED);
+  }
+
+  public void increaseTaskCount(String huntId) {
+    try {
+      huntCollection.findOneAndUpdate(eq("_id", new ObjectId(huntId)),
+       new Document("$inc", new Document("numberOfTasks", 1)));
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 
   public void deleteHunt(Context ctx) {
@@ -206,7 +216,38 @@ public class HostController implements Controller {
           + id
           + "; perhaps illegal ID or an ID for an item not in the system?");
     }
+    deleteTasks(ctx);
     ctx.status(HttpStatus.OK);
+  }
+
+  public void deleteTask(Context ctx) {
+    String id = ctx.pathParam("id");
+    try {
+      String huntId = taskCollection.find(eq("_id", new ObjectId(id))).first().huntId;
+      taskCollection.deleteOne(eq("_id", new ObjectId(id)));
+      decreaseTaskCount(huntId);
+    } catch (Exception e) {
+      ctx.status(HttpStatus.NOT_FOUND);
+      throw new NotFoundResponse(
+        "Was unable to delete ID "
+          + id
+          + "; perhaps illegal ID or an ID for an item not in the system?");
+    }
+    ctx.status(HttpStatus.OK);
+  }
+
+  public void decreaseTaskCount(String huntId) {
+    try {
+      huntCollection.findOneAndUpdate(eq("_id", new ObjectId(huntId)),
+       new Document("$inc", new Document("numberOfTasks", -1)));
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  public void deleteTasks(Context ctx) {
+    String huntId = ctx.pathParam("id");
+    taskCollection.deleteMany(eq("huntId", huntId));
   }
 
 public void updateHunt(Context ctx) {
@@ -273,16 +314,16 @@ public void updateTask(Context ctx) {
 
   @Override
   public void addRoutes(Javalin server) {
-    server.get(API_HOST_BY_ID, this::getHunts);
+    server.get(API_HOST, this::getHunts);
     server.get(API_HUNT, this::getCompleteHunt);
     server.post(API_HUNTS, this::addNewHunt);
     server.get(API_TASKS, this::getTasks);
     server.post(API_TASKS, this::addNewTask);
-    server.put(API_HUNT_BY_ID, this::updateHunt);
+    server.put(API_HUNT, this::updateHunt);
     server.put(API_TASKS_BY_ID, this::updateTask);
     server.get(API_TASKS_BY_ID, this::getTask);
-
-    server.delete(API_HUNT_BY_ID, this::deleteHunt);
+    server.delete(API_HUNT, this::deleteHunt);
+    server.delete(API_TASK, this::deleteTask);
   }
 
 
