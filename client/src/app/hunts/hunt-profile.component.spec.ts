@@ -23,7 +23,7 @@ describe('HuntProfileComponent', () => {
   let component: HuntProfileComponent;
   let fixture: ComponentFixture<HuntProfileComponent>;
   const mockHostService = new MockHostService();
-  const chrisId = 'chris_id';
+  const chrisId = 'ann_id';
   const activatedRoute: ActivatedRouteStub = new ActivatedRouteStub({
     id : chrisId
   });
@@ -101,7 +101,7 @@ describe('DeleteHunt()', () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let location: Location;
   let router: Router;
-  const fryId = 'fry_id';
+  const fryId = 'fran_id';
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const activatedRoute: ActivatedRouteStub = new ActivatedRouteStub({
     id : fryId
