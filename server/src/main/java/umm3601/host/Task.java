@@ -14,4 +14,7 @@ public class Task {
 
     public String name;
     public boolean status;
+    public String getId() {
+        return this._id;
+    }
 }

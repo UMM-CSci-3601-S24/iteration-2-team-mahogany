@@ -1,0 +1,13 @@
+[
+  {
+    "_id": {
+      "$oid": "660314edca715b366238c564"
+    },
+    "huntId": "588935f57546a2daea54de7c",
+    "description": "description",
+    "name": "Hunt Name",
+    "creationTime": "2011-05-04T08:31:14.487Z",
+    "est": 20,
+    "numberOfTasks": 5
+  }
+]

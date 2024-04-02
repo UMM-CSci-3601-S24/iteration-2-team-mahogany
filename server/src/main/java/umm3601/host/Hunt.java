@@ -16,4 +16,24 @@ public class Hunt {
     public String description;
     public int est;
     public int numberOfTasks;
+
+
+    public String getName() {
+      return this.name;
+  }
+
+  public String getDescription() {
+    return this.description;
+
+  }
+
+  public int getEst() {
+    return this.est;
+  }
+
+  public int getNumberOfTasks() {
+    return this.numberOfTasks;
+  }
+
+  
 }

@@ -47,6 +47,9 @@
     }
     @else {
       <button class="add-task-button" mat-raised-button color="primary" (click)="this.addTask = true">ADD TASK</button>
+      <button class="start-hunt-button" (click)="createHuntInstance(completeHunt.hunt._id)" mat-raised-button color="primary" [routerLink]="['/hunts/current', this.huntId()]">Create Hunt Instance</button>
+
+
     }
   </div>
 </div>

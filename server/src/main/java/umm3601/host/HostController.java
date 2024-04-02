@@ -6,24 +6,32 @@ import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
 import io.javalin.http.NotFoundResponse;
 import umm3601.Controller;
+import java.util.logging.Logger;
+
+
 
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.bson.BsonValue;
 import org.bson.Document;
 import org.bson.UuidRepresentation;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.mongojack.JacksonMongoCollection;
+import org.mongojack.MongoCollectionDecorator;
 
+import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Sorts;
 import com.mongodb.client.result.DeleteResult;
+import com.mongodb.client.result.InsertOneResult;
 
 public class HostController implements Controller {
 
@@ -32,9 +40,12 @@ public class HostController implements Controller {
   private static final String API_HUNTS = "/api/hunts";
   private static final String API_TASK = "/api/tasks/{id}";
   private static final String API_TASKS = "/api/tasks";
+  private static final String API_HuntInstance = "/api/HuntInstance";
 
   static final String HOST_KEY = "hostId";
   static final String HUNT_KEY = "huntId";
+  private static final Logger LOGGER = Logger.getLogger(HostController.class.getName());
+
 
   static final int REASONABLE_NAME_LENGTH_HUNT = 50;
   static final int REASONABLE_DESCRIPTION_LENGTH_HUNT = 200;
@@ -45,6 +56,9 @@ public class HostController implements Controller {
   private final JacksonMongoCollection<Host> hostCollection;
   private final JacksonMongoCollection<Hunt> huntCollection;
   private final JacksonMongoCollection<Task> taskCollection;
+  private final JacksonMongoCollection<HuntInstance> HuntInstanceCollection;
+  private final JacksonMongoCollection<Submissions> submissionsCollection;
+
 
   public HostController(MongoDatabase database) {
     hostCollection = JacksonMongoCollection.builder().build(
@@ -62,7 +76,19 @@ public class HostController implements Controller {
       "tasks",
       Task.class,
        UuidRepresentation.STANDARD);
+    HuntInstanceCollection = JacksonMongoCollection.builder().build(
+      database,
+      "HuntInstance",
+      HuntInstance.class,
+       UuidRepresentation.STANDARD);
+      submissionsCollection = JacksonMongoCollection.builder().build(
+      database,
+      "submissions",
+      Submissions.class,
+       UuidRepresentation.STANDARD);
   }
+
+
 
   public void getHost(Context ctx) {
     String id = ctx.pathParam("id");
@@ -239,6 +265,94 @@ public class HostController implements Controller {
     ctx.status(HttpStatus.OK);
   }
 
+public static class HuntInstanceForm {
+  public String huntId;
+  public List<String> submissions;
+}
+
+private LocalDateTime getCurrentDateTime() {
+  return LocalDateTime.now();
+}
+
+ public void createHuntInstance(Context ctx) {
+
+    LOGGER.info("Entering createHuntInstance method");
+    try {
+        LocalDateTime creationTime = getCurrentDateTime(); // Declare and initialize the creationTime variable
+
+        HuntInstanceForm huntInstanceForm = ctx.bodyValidator(HuntInstanceForm.class)
+          .check(hi -> hi.huntId != null && hi.submissions != null, "huntId and submissions must not be null")
+          .get();
+
+        Hunt hunt = huntCollection.find(eq("_id", new ObjectId(huntInstanceForm.huntId))).first();
+        String name = hunt.getName();
+        int est = hunt.getEst();
+        String description = hunt.getDescription();
+        int numberOfTasks = hunt.getNumberOfTasks();
+
+
+        LOGGER.info("HuntInstanceForm: " + huntInstanceForm);
+
+      HuntInstance huntInstance = new HuntInstance(huntInstanceForm.huntId, new ArrayList<>(), creationTime,
+          description, name, est, numberOfTasks);
+
+      // huntInstance.name = hunt.name;
+      // huntInstance.description = hunt.description;
+      // huntInstance.est = hunt.est;
+      // huntInstance.numberOfTasks = hunt.numberOfTasks;
+      // huntInstance.creationTime = new Date();
+
+      LOGGER.info("HuntInstance: " +
+          huntInstance.huntId + " " +
+          huntInstance.creationTime + " " +
+          huntInstance.name + " " +
+          huntInstance.est + " " +
+          huntInstance.description + " " +
+          huntInstance.numberOfTasks);
+
+      // Insert the HuntInstance into the database first and get the result
+      InsertOneResult result = HuntInstanceCollection.insertOne(huntInstance);
+      LOGGER.info("Result: " + result + " " + result.getInsertedId());
+
+      // Retrieve the generated ID
+      String huntInstanceId = result.getInsertedId().asObjectId().getValue().toHexString();
+
+      ArrayList<Task> matchingTasks = taskCollection
+          .find(eq(HUNT_KEY, huntInstanceForm.huntId))
+          .into(new ArrayList<>());
+
+      for (Task task : matchingTasks) {
+        Submissions instancedSubmission = new Submissions();
+        instancedSubmission.huntInstanceId = huntInstanceId; // Use the HuntInstance ID
+        instancedSubmission.name = task.name;
+        instancedSubmission.status = task.status;
+
+        submissionsCollection.insertOne(instancedSubmission);
+        String instancedSubmissionId = instancedSubmission.getId();
+
+        huntInstance.getSubmissions().add(instancedSubmissionId);
+      }
+
+      // Update the HuntInstance in the HuntInstanceCollection
+      HuntInstanceCollection.updateOne(eq("_id", new ObjectId(huntInstanceId)),
+          new Document("$set", new Document("submissions", huntInstance.getSubmissions())));
+
+      LOGGER.info("Created HuntInstance with ID: " + huntInstanceId);
+      LOGGER.info("Time: " + creationTime);
+      LOGGER.info("Info: " + huntInstance.huntId + " " + huntInstance.submissions + " " + huntInstance.creationTime);
+
+      ctx.status(201);
+    } catch (Exception e) {
+      LOGGER.severe("Failed to create hunt instance: " + e.getMessage());
+      ctx.status(500);
+      ctx.json(Map.of("success", false, "message", "Failed to create hunt instance", "error", e.getMessage()));
+    }
+  }
+
+
+
+
+
   @Override
   public void addRoutes(Javalin server) {
     server.get(API_HOST, this::getHunts);
@@ -248,5 +362,8 @@ public class HostController implements Controller {
     server.post(API_TASKS, this::addNewTask);
     server.delete(API_HUNT, this::deleteHunt);
     server.delete(API_TASK, this::deleteTask);
+    server.post(API_HuntInstance, this::createHuntInstance); // Corrected here
+
+
   }
 }

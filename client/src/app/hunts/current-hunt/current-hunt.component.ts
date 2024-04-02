@@ -1,30 +1,33 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { MatCardModule } from '@angular/material/card';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { Subject } from 'rxjs';
-import { map, switchMap, takeUntil } from 'rxjs/operators';
-import { HuntCardComponent } from './hunt-card.component';
-import { CompleteHunt } from './completeHunt';
-import { HostService } from '../hosts/host.service';
-import { AddTaskComponent } from './addTask/add-task.component';
-import { MatDivider } from '@angular/material/divider';
-import { MatIconButton } from '@angular/material/button';
+import { Component, OnDestroy, OnInit, input } from '@angular/core';
+import { HuntCardComponent } from "../hunt-card.component";
+import { CompleteHunt } from '../completeHunt';
+import { MatCard, MatCardActions, MatCardContent, MatCardTitle } from '@angular/material/card';
 import { MatIcon } from '@angular/material/icon';
-import { HttpClientModule } from '@angular/common/http';
+import { MatDivider } from '@angular/material/divider';
+import { AddTaskComponent } from "../addTask/add-task.component";
+import { DeleteTaskDialogComponent } from '../deleteTask/delete-task-dialog.component';
+import { DeleteHuntDialogComponent } from '../deleteHunt/delete-hunt-dialog.component';
+import { Subject, map, switchMap, takeUntil } from 'rxjs';
+import { ActivatedRoute, ParamMap, Router, RouterLink } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { DeleteHuntDialogComponent } from './deleteHunt/delete-hunt-dialog.component';
-import { DeleteTaskDialogComponent } from './deleteTask/delete-task-dialog.component';
-import { HuntInstance } from './huntInstance';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { HostService } from 'src/app/hosts/host.service';
+import { Hunt } from '../hunt';
+import { HuntInstance } from '../huntInstance';
 
 @Component({
-    selector: 'app-hunt-profile',
-    templateUrl: './hunt-profile.component.html',
-    styleUrls: ['./hunt-profile.component.scss'],
+    selector: 'app-current-hunt',
     standalone: true,
-    imports: [HuntCardComponent, MatCardModule, AddTaskComponent, MatDivider, MatIconButton, MatIcon, HttpClientModule]
+    templateUrl: './current-hunt.component.html',
+    styleUrl: './current-hunt.component.scss',
+    imports: [HuntCardComponent, MatCard, MatCardTitle, MatIcon, MatDivider, AddTaskComponent, MatCardContent, MatCardActions, RouterLink]
 })
-export class HuntProfileComponent implements OnInit, OnDestroy {
+export class CurrentHuntComponent implements OnInit, OnDestroy{
+  hunt = input.required<Hunt>();
+  simple = input(true);
+
+  huntInstance: HuntInstance;
+
   confirmDeleteHunt: boolean =false;
   completeHunt: CompleteHunt;
   error: { help: string, httpResponse: string, message: string };
@@ -66,8 +69,6 @@ export class HuntProfileComponent implements OnInit, OnDestroy {
     });
   }
 
-
-
   deleteTask(id: string): void {
     this.hostService.deleteTask(id).subscribe(() => {
       location.reload();
@@ -101,17 +102,6 @@ export class HuntProfileComponent implements OnInit, OnDestroy {
       }
     });
   }
-
-  createHuntInstance(huntId: string): void {
-    console.log('Hunt ID:', huntId);
-    this.hostService.createHuntInstance(huntId).subscribe((huntInstance: HuntInstance) => {
-      console.log('Created hunt instance with ID:', huntInstance._id);
-      // Assuming HuntInstance has an 'id' property
-    }, (error) => {
-      console.error('Error creating hunt instance:', error);
-    });
-  }
-
 
   ngOnDestroy() {
     this.ngUnsubscribe.next();
