@@ -13,6 +13,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { HostService } from 'src/app/hosts/host.service';
 import { Hunt } from '../hunt';
+import { HuntInstance } from '../huntInstance';
 
 @Component({
     selector: 'app-current-hunt',
@@ -24,6 +25,8 @@ import { Hunt } from '../hunt';
 export class CurrentHuntComponent implements OnInit, OnDestroy{
   hunt = input.required<Hunt>();
   simple = input(true);
+
+  huntInstance: HuntInstance;
 
   confirmDeleteHunt: boolean =false;
   completeHunt: CompleteHunt;
@@ -39,12 +42,12 @@ export class CurrentHuntComponent implements OnInit, OnDestroy{
 
       map((paramMap: ParamMap) => paramMap.get('id')),
 
-      switchMap((id: string) => this.hostService.getHuntById(id)),
+      switchMap((id: string) => this.hostService.createHuntInstance(id)),
 
       takeUntil(this.ngUnsubscribe)
     ).subscribe({
-      next: completeHunt => {
-        this.completeHunt = completeHunt;
+      next: huntInstance => {
+        this.huntInstance = huntInstance;
         return ;
       },
       error: _err => {

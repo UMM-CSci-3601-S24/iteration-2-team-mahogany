@@ -5,6 +5,7 @@ import { environment } from '../../environments/environment';
 import { Hunt } from '../hunts/hunt';
 import { Task } from '../hunts/task';
 import { CompleteHunt } from '../hunts/completeHunt';
+import { HuntInstance } from '../hunts/huntInstance';
 
 @Injectable({
   providedIn: 'root'
@@ -24,14 +25,15 @@ export class HostService {
     return this.httpClient.get<CompleteHunt>(`${this.huntUrl}/${id}`);
   }
 
-  createHuntInstance(huntId: string): Observable<string> {
+  createHuntInstance(huntId: string): Observable<HuntInstance> {
     const huntInstance = {
       huntId: huntId,
       submissions: []
     };
 
-    return this.httpClient.post<string>("/api/HuntInstance", huntInstance);
+    return this.httpClient.post<HuntInstance>("/api/HuntInstance", huntInstance);
   }
+
 
 
   addHunt(newHunt: Partial<Hunt>): Observable<string> {
