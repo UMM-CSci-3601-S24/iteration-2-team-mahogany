@@ -1,5 +1,3 @@
-import { Location } from '@angular/common';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { AbstractControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -10,13 +8,11 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute, ParamMap, Router, convertToParamMap } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { of, throwError } from 'rxjs';
+import { of } from 'rxjs';
 import { MockHostService } from 'src/testing/host.service.mock';
 import { HostService } from 'src/app/hosts/host.service';
-import { HuntProfileComponent } from '../hunt-profile.component';
 import { HuntEditComponent } from './hunt-edit.component';
-import { input } from '@angular/core';
-import { ActivatedRouteStub } from 'src/testing/activated-route-stub';
+
 
 
 
@@ -75,14 +71,6 @@ describe('HuntEditComponent', () => {
     expect(huntForm).toBeTruthy();
   });
 
-  // it('should fetch hunt data on init and set form values', () => {
-  //   huntEditComponent.ngOnInit();
-  //   expect(mockHostService.getHuntById).toHaveBeenCalledWith(chrisId); 
-  //   expect(huntEditComponent.huntForm.value).toEqual({ huntId: 'fran_id', name: 'Frans Hunt', description: 'super exciting hunt',
-  //   est: 45,
-  //   hostId: 'fran_hid',
-  //   numberOfTasks: 2});
-  // });
 
   it('form should be invalid when empty', () => {
     expect(huntForm.valid).toBeTruthy();
@@ -116,12 +104,7 @@ describe('HuntEditComponent', () => {
       expect(nameControl.valid).toBeTruthy();
     });
 
-    // it('should update hunt data on submit and navigate to the hunt list', () => {
-    //   (mockHostService as any).updateHunt = jasmine.createSpy().and.returnValue(of({}));
-    //   huntEditComponent.onSubmit();
-    //   expect(mockHostService.updateHunt).toHaveBeenCalledWith(huntEditComponent.huntForm.value);
-    //   expect(mockRouter.navigate).toHaveBeenCalledWith(['/hunts']);
-    // });
+
   });
 
   describe('getErrorMessage()', () => {
@@ -163,6 +146,22 @@ describe('HuntEditComponent', () => {
       huntEditComponent.huntForm.get(controlName).setErrors(null);
       huntEditComponent.huntForm.get(controlName).markAsDirty();
       expect(huntEditComponent.formControlHasError(controlName)).toBeFalsy();
+    });
+  });
+
+  describe('onSubmit()', () => {
+    it('should submit the form', () => {
+      const currentHunt = MockHostService.testCompleteHunts[0];
+      huntEditComponent.huntForm.setValue({
+        hostId: "fran_hid",
+        name: "Frans Hunt",
+        description: "super exciting hunt",
+        est: 45,
+        numberOfTasks: 2,
+      });
+
+      huntEditComponent.onSubmit();
+      expect(huntEditComponent.huntForm.valid).toBeTruthy();
     });
   });
 });

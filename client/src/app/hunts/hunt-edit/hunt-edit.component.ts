@@ -105,13 +105,6 @@ export class HuntEditComponent implements OnInit {
         // For example, navigate back to the list of hunts
         this.router.navigate(['/hunts', this.huntId]);
       },
-      error: (err) => {
-        // Handle error
-        // For example, log the error and show an error message to the user
-        console.error(`Failed to update hunt: ${err.message}`);
-        // Show an error message to the user
-        // This depends on how you handle user notifications in your app
-      }
     });
   }
 }

@@ -106,6 +106,13 @@ export class MockHostService extends HostService {
     super(null);
   }
 
+  http = {
+    put: jasmine.createSpy('put').and.returnValue(of({}))
+  };
+
+  editHunt(hunt) {
+    return this.http.put(`/api/hunts/${hunt._id}`, hunt);
+  }
 
   getHunts(): Observable<Hunt[]> {
     return of(MockHostService.testHunts);
