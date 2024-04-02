@@ -115,6 +115,13 @@ describe('HuntEditComponent', () => {
       nameControl.setValue('Bad2Th3B0ne');
       expect(nameControl.valid).toBeTruthy();
     });
+
+    // it('should update hunt data on submit and navigate to the hunt list', () => {
+    //   (mockHostService as any).updateHunt = jasmine.createSpy().and.returnValue(of({}));
+    //   huntEditComponent.onSubmit();
+    //   expect(mockHostService.updateHunt).toHaveBeenCalledWith(huntEditComponent.huntForm.value);
+    //   expect(mockRouter.navigate).toHaveBeenCalledWith(['/hunts']);
+    // });
   });
 
   describe('getErrorMessage()', () => {
@@ -128,6 +135,34 @@ describe('HuntEditComponent', () => {
       const controlName: keyof typeof huntEditComponent.editHuntValidationMessages = 'name';
       huntEditComponent.huntForm.get(controlName).setErrors({'unknown': true});
       expect(huntEditComponent.getErrorMessage(controlName)).toEqual('Unknown error');
+    });
+  });
+  describe('formControlHasError()', () => {
+    it('should return true if the control is invalid and dirty', () => {
+      const controlName: keyof typeof huntEditComponent.editHuntValidationMessages = 'name';
+      huntEditComponent.huntForm.get(controlName).setErrors({'required': true});
+      huntEditComponent.huntForm.get(controlName).markAsDirty();
+      expect(huntEditComponent.formControlHasError(controlName)).toBeTruthy();
+    });
+
+    it('should return true if the control is invalid and touched', () => {
+      const controlName: keyof typeof huntEditComponent.editHuntValidationMessages = 'name';
+      huntEditComponent.huntForm.get(controlName).setErrors({'required': true});
+      huntEditComponent.huntForm.get(controlName).markAsTouched();
+      expect(huntEditComponent.formControlHasError(controlName)).toBeTruthy();
+    });
+
+    it('should return false if the control is invalid but pristine', () => {
+      const controlName: keyof typeof huntEditComponent.editHuntValidationMessages = 'name';
+      huntEditComponent.huntForm.get(controlName).setErrors({'required': true});
+      expect(huntEditComponent.formControlHasError(controlName)).toBeFalsy();
+    });
+
+    it('should return false if the control is valid but dirty', () => {
+      const controlName: keyof typeof huntEditComponent.editHuntValidationMessages = 'name';
+      huntEditComponent.huntForm.get(controlName).setErrors(null);
+      huntEditComponent.huntForm.get(controlName).markAsDirty();
+      expect(huntEditComponent.formControlHasError(controlName)).toBeFalsy();
     });
   });
 });
