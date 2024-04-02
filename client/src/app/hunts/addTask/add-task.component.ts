@@ -13,6 +13,7 @@ import { CompleteHunt } from "../completeHunt";
 import { HuntCardComponent } from "../hunt-card.component";
 import { map } from "rxjs/internal/operators/map";
 import { Subject, switchMap, takeUntil } from "rxjs";
+import { HuntInstance } from "../huntInstance";
 
 
 
@@ -88,13 +89,15 @@ export class AddTaskComponent {
   }
 
   createHuntInstance(huntId: string): void {
-    console.log('Hunt ID:', huntId); // Add this line
-    this.hostService.createHuntInstance(huntId).subscribe((huntInstanceId: string) => {
-      console.log('Created hunt instance with ID:', huntInstanceId);
+    console.log('Hunt ID:', huntId);
+    this.hostService.createHuntInstance(huntId).subscribe((huntInstance: HuntInstance) => {
+      console.log('Created hunt instance with ID:', huntInstance._id);
+      // Assuming HuntInstance has an 'id' property
     }, (error) => {
       console.error('Error creating hunt instance:', error);
     });
   }
+
 
 
   formControlHasError(controlName: string): boolean {

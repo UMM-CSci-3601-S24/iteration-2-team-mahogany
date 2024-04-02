@@ -42,12 +42,12 @@ export class CurrentHuntComponent implements OnInit, OnDestroy{
 
       map((paramMap: ParamMap) => paramMap.get('id')),
 
-      switchMap((id: string) => this.hostService.createHuntInstance(id)),
+      switchMap((id: string) => this.hostService.getHuntById(id)),
 
       takeUntil(this.ngUnsubscribe)
     ).subscribe({
-      next: huntInstance => {
-        this.huntInstance = huntInstance;
+      next: completeHunt => {
+        this.completeHunt = completeHunt;
         return ;
       },
       error: _err => {
