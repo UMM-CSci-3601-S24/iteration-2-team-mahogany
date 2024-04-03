@@ -6,7 +6,6 @@ import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
 import io.javalin.http.NotFoundResponse;
 import umm3601.Controller;
-import io.javalin.http.Context;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -53,11 +52,18 @@ public class HostController implements Controller {
 
   static final int REASONABLE_NAME_LENGTH_TASK = 150;
 
+  private static final int STATUS_OK = 200;
+  private static final int STATUS_BAD_REQUEST = 400;
+  private static final int STATUS_INTERNAL_SERVER_ERROR = 500;
+
   private final JacksonMongoCollection<Host> hostCollection;
   private final JacksonMongoCollection<Hunt> huntCollection;
   private final JacksonMongoCollection<Task> taskCollection;
 
-  public HostController(MongoDatabase database) {
+  private final FileFactory fileFactory;
+
+  public HostController(MongoDatabase database, FileFactory fileFactory) {
+    this.fileFactory = fileFactory;
     hostCollection = JacksonMongoCollection.builder().build(
       database,
       "hosts",
@@ -88,14 +94,14 @@ public void uploadPhoto(Context ctx) {
         File file = Path.of("uploads", id + "." + extension).toFile();
 
         Files.copy(in, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        ctx.status(200).result("Photo uploaded successfully with ID: " + id);
+        ctx.status(STATUS_OK).result("Photo uploaded successfully with ID: " + id);
       }
     } else {
-      ctx.status(400).result("Missing photo");
+      ctx.status(STATUS_BAD_REQUEST).result("Missing photo");
     }
   } catch (Exception e) {
     e.printStackTrace(); // This will print the full stack trace to the server logs
-    ctx.status(500).result("Photo upload failed: " + e.getMessage());
+    ctx.status(STATUS_INTERNAL_SERVER_ERROR).result("Photo upload failed: " + e.getMessage());
   }
 }
 
@@ -111,15 +117,16 @@ private String getFileExtension(String filename) {
 
 public void getPhoto(Context ctx) {
   String filename = ctx.pathParam("filename");
-  File file = new File("uploads/" + filename);
+  File file = this.fileFactory.create("uploads/" + filename);
   if (file.exists()) {
     try {
-      ctx.result(new FileInputStream(file));
+      FileInputStream fileInputStream = this.fileFactory.createInputStream(file);
+      ctx.result(fileInputStream);
     } catch (FileNotFoundException e) {
-      ctx.status(500).result("Error reading file: " + e.getMessage());
+      ctx.status(STATUS_INTERNAL_SERVER_ERROR).result("Error reading file: " + e.getMessage());
     }
   } else {
-    ctx.status(404).result("Photo not found");
+    ctx.status(STATUS_BAD_REQUEST).result("Photo not found");
   }
 }
 
@@ -128,12 +135,12 @@ public void deletePhoto(Context ctx) {
   File file = new File("uploads/" + filename);
   if (file.exists()) {
       if (file.delete()) {
-          ctx.status(200).result("Photo deleted successfully");
+          ctx.status(STATUS_OK).result("Photo deleted successfully");
       } else {
-          ctx.status(500).result("Error deleting file");
+          ctx.status(STATUS_INTERNAL_SERVER_ERROR).result("Error deleting file");
       }
   } else {
-      ctx.status(404).result("Photo not found");
+      ctx.status(STATUS_BAD_REQUEST).result("Photo not found");
   }
 
 }

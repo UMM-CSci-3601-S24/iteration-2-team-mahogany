@@ -8,10 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.startsWith;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -20,6 +17,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -69,8 +67,6 @@ public class HostControllerSpec {
   private static MongoDatabase db;
   private static JavalinJackson javalinJackson = new JavalinJackson();
 
-  private File file;
-
   @Mock
   private Context ctx;
 
@@ -88,6 +84,9 @@ public class HostControllerSpec {
 
   @Captor
   private ArgumentCaptor<Map<String, String>> mapCaptor;
+
+  @Mock
+  private FileFactory fileFactory;
 
   @BeforeAll
   static void setupAll() {
@@ -110,8 +109,8 @@ public class HostControllerSpec {
     public void setup() {
         ctx = mock(Context.class);
         uploadedFile = mock(UploadedFile.class);
-        hostController = new HostController(db);
-        file = mock(File.class);
+        fileFactory = mock(FileFactory.class);
+        hostController = new HostController(db, fileFactory);
         when(ctx.status(anyInt())).thenReturn(ctx);
         when(ctx.result(anyString())).thenReturn(ctx);
     when(ctx.uploadedFile("photo")).thenReturn(uploadedFile);
@@ -212,7 +211,7 @@ public class HostControllerSpec {
     taskDocuments.insertMany(testTasks);
     taskDocuments.insertOne(task);
 
-    hostController = new HostController(db);
+    hostController = new HostController(db, fileFactory);
   }
 
   @Test
@@ -729,8 +728,6 @@ public class HostControllerSpec {
   @Test
 public void testUploadPhoto() throws IOException {
   // Arrange
-  Context ctx = mock(Context.class);
-  UploadedFile uploadedFile = mock(UploadedFile.class);
   when(ctx.uploadedFile("photo")).thenReturn(uploadedFile);
   when(uploadedFile.content()).thenReturn(new ByteArrayInputStream(new byte[0]));
   when(uploadedFile.filename()).thenReturn("test.jpg");
@@ -750,7 +747,6 @@ public void testUploadPhoto() throws IOException {
 @Test
 public void testUploadPhotoWithoutPhoto() {
   // Arrange
-  Context ctx = mock(Context.class);
   when(ctx.uploadedFile("photo")).thenReturn(null);
   when(ctx.status(anyInt())).thenReturn(ctx);
   when(ctx.result(anyString())).thenReturn(ctx);
@@ -766,8 +762,6 @@ public void testUploadPhotoWithoutPhoto() {
 @Test
 public void testUploadPhotoWithException() {
   // Arrange
-  Context ctx = mock(Context.class);
-  UploadedFile uploadedFile = mock(UploadedFile.class);
   when(ctx.uploadedFile("photo")).thenReturn(uploadedFile);
   when(uploadedFile.content()).thenThrow(new RuntimeException("Test exception"));
   when(ctx.status(anyInt())).thenReturn(ctx);
@@ -779,5 +773,27 @@ public void testUploadPhotoWithException() {
   // Assert
   verify(ctx).status(500);
   verify(ctx).result("Photo upload failed: Test exception");
+}
+
+@Test
+public void testGetPhoto() throws IOException {
+    // Arrange
+    String expectedPhotoPath = "uploads/photo.jpg";
+    File mockFile = mock(File.class);
+    when(mockFile.exists()).thenReturn(true);
+
+    when(fileFactory.create(expectedPhotoPath)).thenReturn(mockFile);
+    when(ctx.pathParam("filename")).thenReturn("photo.jpg");
+
+    FileInputStream fileInputStream = mock(FileInputStream.class);
+
+    when(fileFactory.createInputStream(mockFile)).thenReturn(fileInputStream);
+    when(ctx.result(any(InputStream.class))).thenReturn(ctx);
+
+    // Act
+    hostController.getPhoto(ctx);
+
+    // Assert
+    verify(ctx).result(any(InputStream.class));
 }
 }
