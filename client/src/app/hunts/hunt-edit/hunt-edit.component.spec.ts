@@ -6,7 +6,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { ActivatedRoute, ParamMap, Router, convertToParamMap } from '@angular/router';
+import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 import { MockHostService } from 'src/testing/host.service.mock';
@@ -19,13 +19,11 @@ import { HuntEditComponent } from './hunt-edit.component';
 describe('HuntEditComponent', () => {
   let huntEditComponent: HuntEditComponent;
   let huntForm: FormGroup;
-  let mockHostService: { getHuntById: jasmine.Spy };
-  mockHostService = jasmine.createSpyObj('HostService', ['getHuntById']);
+  const mockHostService = jasmine.createSpyObj('HostService', ['getHuntById']);
   mockHostService.getHuntById.and.returnValue(of(MockHostService.testCompleteHunts[0]));
   let fixture: ComponentFixture<HuntEditComponent>;
   const chrisId = 'fran_id';
-  let activatedRoute: { snapshot: { paramMap: ParamMap } };
-  activatedRoute = {
+  const activatedRoute = {
     snapshot: {
       paramMap: convertToParamMap({ id: chrisId }) 
     }
@@ -151,7 +149,6 @@ describe('HuntEditComponent', () => {
 
   describe('onSubmit()', () => {
     it('should submit the form', () => {
-      const currentHunt = MockHostService.testCompleteHunts[0];
       huntEditComponent.huntForm.setValue({
         hostId: "fran_hid",
         name: "Frans Hunt",

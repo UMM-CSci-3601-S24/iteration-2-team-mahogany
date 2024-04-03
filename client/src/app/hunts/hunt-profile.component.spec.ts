@@ -57,17 +57,26 @@ describe('HuntProfileComponent', () => {
   it('should navigate to a specific hunt profile', () => {
     const expectedHunt: CompleteHunt = MockHostService.testCompleteHunts[0];
     activatedRoute.setParamMap({ id: expectedHunt.hunt._id });
+    component.ngOnInit();
     expect(component.completeHunt).toEqual(expectedHunt);
   });
 
   it('should navigate to correct hunt when the id parameter changes', () => {
     let expectedHunt: CompleteHunt = MockHostService.testCompleteHunts[0];
     activatedRoute.setParamMap({ id: expectedHunt.hunt._id });
-    expect(component.completeHunt).toEqual(expectedHunt);
-
-    expectedHunt = MockHostService.testCompleteHunts[1];
-    activatedRoute.setParamMap({ id: expectedHunt.hunt._id });
-    expect(component.completeHunt).toEqual(expectedHunt);
+    component.ngOnInit();
+    fixture.whenStable().then(() => {
+      fixture.detectChanges();
+      expect(component.completeHunt).toEqual(expectedHunt);
+  
+      expectedHunt = MockHostService.testCompleteHunts[1];
+      activatedRoute.setParamMap({ id: expectedHunt.hunt._id });
+      component.ngOnInit();
+      fixture.whenStable().then(() => {
+        fixture.detectChanges();
+        expect(component.completeHunt).toEqual(expectedHunt);
+      });
+    });
   });
 
   it('should have `null` for the hunt for a bad ID', () => {

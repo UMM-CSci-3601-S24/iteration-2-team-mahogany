@@ -4,7 +4,6 @@ import { AppComponent } from 'src/app/app.component';
 import { Hunt } from '../app/hunts/hunt';
 import { HostService } from '../app/hosts/host.service';
 import { CompleteHunt } from 'src/app/hunts/completeHunt';
-import { Task } from '../app/hunts/task'; // Import the Task type from the correct location
 
 @Injectable({
   providedIn: AppComponent

@@ -6,7 +6,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { ActivatedRoute, ParamMap, Router, convertToParamMap } from '@angular/router';
+import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 import { MockHostService } from 'src/testing/host.service.mock';
@@ -19,13 +19,11 @@ import { TaskEditComponent } from './task-edit.component';
 describe('TaskEditComponent', () => {
   let taskEditComponent: TaskEditComponent;
   let taskForm: FormGroup;
-  let mockHostService: { getTaskById: jasmine.Spy };
-  mockHostService = jasmine.createSpyObj('HostService', ['getTaskById']);
+  const mockHostService = jasmine.createSpyObj('HostService', ['getTaskById']);
   mockHostService.getTaskById.and.returnValue(of(MockHostService.testCompleteHunts[0]));
   let fixture: ComponentFixture<TaskEditComponent>;
   const chrisId = 'fran_id';
-  let activatedRoute: { snapshot: { paramMap: ParamMap } };
-  activatedRoute = {
+  const activatedRoute = {
     snapshot: {
       paramMap: convertToParamMap({ id: chrisId }) 
     }
