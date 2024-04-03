@@ -25,7 +25,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -33,7 +32,6 @@ import org.mongojack.JacksonMongoCollection;
 
 import com.mongodb.MongoClientSettings;
 import com.mongodb.ServerAddress;
-import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
@@ -43,7 +41,6 @@ import io.javalin.Javalin;
 import io.javalin.http.BadRequestResponse;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
-import io.javalin.http.InternalServerErrorResponse;
 import io.javalin.http.NotFoundResponse;
 import io.javalin.json.JavalinJackson;
 import io.javalin.validation.BodyValidator;
@@ -734,49 +731,36 @@ void getTaskWithInvalidId() {
 
     assertEquals("Best Task", db.getCollection("tasks").find(eq("_id", new ObjectId(testID))).first().get("name"));
   }
-  
+
   @Test
   void updateHuntWithInvalidId() {
-    // Arrange
     String id = "invalid id";
     when(ctx.pathParam("id")).thenReturn(id);
-  
-    // Act and Assert
     assertThrows(BadRequestResponse.class, () -> hostController.updateHunt(ctx));
   }
-  
   @Test
   void updateHuntWithNonexistentId() {
-    // Arrange
     String id = new ObjectId().toHexString();
     when(ctx.pathParam("id")).thenReturn(id);
     when(huntCollection.findOne(eq("_id", new ObjectId(id)))).thenReturn(null);
-  
-    // Act and Assert
+
     assertThrows(NotFoundResponse.class, () -> hostController.updateHunt(ctx));
   }
 
-
 @Test
 void updateTaskWithInvalidId() {
-  // Arrange
   String id = "invalid id";
   when(ctx.pathParam("id")).thenReturn(id);
 
-  // Act and Assert
   assertThrows(BadRequestResponse.class, () -> hostController.updateTask(ctx));
 }
 
 @Test
 void updateTaskWithNonexistentId() {
-  // Arrange
   String id = new ObjectId().toHexString();
   when(ctx.pathParam("id")).thenReturn(id);
   when(taskCollection.findOne(eq("_id", new ObjectId(id)))).thenReturn(null);
 
-  // Act and Assert
   assertThrows(NotFoundResponse.class, () -> hostController.updateTask(ctx));
 }
-
-
 }
