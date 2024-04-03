@@ -7,7 +7,7 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { MatSelectModule } from "@angular/material/select";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import { ActivatedRoute, ParamMap, RouterLink } from "@angular/router";
+import { ActivatedRoute, ParamMap, RouterLink, Router } from "@angular/router";
 import { HostService } from "src/app/hosts/host.service";
 import { CompleteHunt } from "../completeHunt";
 import { HuntCardComponent } from "../hunt-card.component";
@@ -31,7 +31,7 @@ import { HuntInstance } from "../huntInstance";
 
 export class AddTaskComponent {
 
-
+  huntInstanceId: string;
   huntId = input.required<string>();
   addTask: boolean = false;
   completeHunt: CompleteHunt;
@@ -85,7 +85,9 @@ export class AddTaskComponent {
   constructor(
     private hostService: HostService,
     private snackBar: MatSnackBar,
-    private route: ActivatedRoute,) {
+    private router: Router,
+    private route: ActivatedRoute
+    ,) {
   }
 
   createHuntInstance(huntId: string): void {
@@ -98,7 +100,29 @@ export class AddTaskComponent {
     });
   }
 
+  createAndNavigateToHuntInstance(huntId: string): void {
+    this.hostService.createHuntInstance(huntId).subscribe({
+      next: (huntInstance: HuntInstance) => {
+        console.log('HuntInstance:', huntInstance);
+        if (huntInstance) {
+          this.huntInstanceId = huntInstance.id;
+          console.log('HuntInstance ID:', this.huntInstanceId);
+          if (this.huntInstanceId) {
+            this.router.navigate(['/hunts/current/', this.huntInstanceId]);
+          } else {
+            // Handle the case where huntInstanceId is undefined
+            console.error('huntInstanceId is undefined');
+          }
 
+        } else {
+          console.log('HuntInstance is null');
+        }
+      },
+      error: _err => {
+        console.error('Error creating hunt instance:', _err);
+      }
+    });
+  }
 
   formControlHasError(controlName: string): boolean {
     return this.addTaskForm.get(controlName).invalid &&

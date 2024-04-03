@@ -25,6 +25,11 @@ export class HostService {
     return this.httpClient.get<CompleteHunt>(`${this.huntUrl}/${id}`);
   }
 
+  getHuntInstance(id: string): Observable<HuntInstance> {
+    return this.httpClient.get<HuntInstance>(`/api/huntInstances/${id}`);
+  }
+
+
   // createHuntInstance(id: string): Observable<HuntInstance> {
   //   return this.httpClient.get<HuntInstance>(`${this.huntUrl}/${id}`);
   // }

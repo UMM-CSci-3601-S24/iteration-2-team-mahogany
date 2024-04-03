@@ -112,6 +112,8 @@ export class HuntProfileComponent implements OnInit, OnDestroy {
     });
   }
 
+  
+
 
   ngOnDestroy() {
     this.ngUnsubscribe.next();

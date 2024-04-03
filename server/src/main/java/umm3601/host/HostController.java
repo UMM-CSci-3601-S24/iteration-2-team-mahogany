@@ -32,6 +32,7 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Sorts;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.InsertOneResult;
+import org.slf4j.LoggerFactory;
 
 public class HostController implements Controller {
 
@@ -50,6 +51,7 @@ public class HostController implements Controller {
   static final int REASONABLE_NAME_LENGTH_HUNT = 50;
   static final int REASONABLE_DESCRIPTION_LENGTH_HUNT = 200;
   private static final int REASONABLE_EST_LENGTH_HUNT = 240;
+
 
   static final int REASONABLE_NAME_LENGTH_TASK = 150;
 
@@ -265,6 +267,8 @@ public class HostController implements Controller {
     ctx.status(HttpStatus.OK);
   }
 
+
+
 public static class HuntInstanceForm {
   public String huntId;
   public List<String> submissions;
@@ -334,21 +338,23 @@ private LocalDateTime getCurrentDateTime() {
       }
 
       // Update the HuntInstance in the HuntInstanceCollection
-      HuntInstanceCollection.updateOne(eq("_id", new ObjectId(huntInstanceId)),
-          new Document("$set", new Document("submissions", huntInstance.getSubmissions())));
+// Update the HuntInstance in the HuntInstanceCollection
+HuntInstanceCollection.updateOne(eq("_id", new ObjectId(huntInstanceId)),
+    new Document("$set", new Document("submissions", huntInstance.getSubmissions())));
 
-      LOGGER.info("Created HuntInstance with ID: " + huntInstanceId);
-      LOGGER.info("Time: " + creationTime);
-      LOGGER.info("Info: " + huntInstance.huntId + " " + huntInstance.submissions + " " + huntInstance.creationTime);
+LOGGER.info("Created HuntInstance with ID: " + huntInstanceId);
+LOGGER.info("Time: " + creationTime);
+LOGGER.info("Info: " + huntInstance.huntId + " " + huntInstance.submissions + " " + huntInstance.creationTime);
 
-      ctx.status(201);
+// Return the HuntInstance in the response
+ctx.status(201);
+ctx.json(huntInstance);
     } catch (Exception e) {
       LOGGER.severe("Failed to create hunt instance: " + e.getMessage());
       ctx.status(500);
       ctx.json(Map.of("success", false, "message", "Failed to create hunt instance", "error", e.getMessage()));
     }
   }
-
 
 
 

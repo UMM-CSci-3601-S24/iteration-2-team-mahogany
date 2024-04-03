@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Date;
 
 public class HuntInstance {
+  public ObjectId _id;
   public String huntId;
   public List<String> submissions;
   public String description;

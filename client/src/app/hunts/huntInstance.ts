@@ -5,5 +5,6 @@ export interface HuntInstance {
   name: string;
   creationTime: Date;
   est: number;
+  id: string;
   numberOfTasks: number;
 }

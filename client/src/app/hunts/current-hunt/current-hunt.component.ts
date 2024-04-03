@@ -59,6 +59,24 @@ export class CurrentHuntComponent implements OnInit, OnDestroy{
       }
 
     });
+
+    this.route.paramMap.pipe(
+      map((paramMap: ParamMap) => paramMap.get('id')),
+      switchMap((id: string) => this.hostService.getHuntInstance(id)),
+      takeUntil(this.ngUnsubscribe)
+    ).subscribe({
+      next: huntInstance => {
+        this.huntInstance = huntInstance;
+        return ;
+      },
+      error: _err => {
+        this.error = {
+          help: 'There was a problem loading the hunt – try again.',
+          httpResponse: _err.message,
+          message: _err.error?.title,
+        };
+      }
+    });
   }
 
   deleteHunt(id: string): void {
@@ -74,6 +92,7 @@ export class CurrentHuntComponent implements OnInit, OnDestroy{
       location.reload();
     });
   }
+
 
   openDeleteHuntDialog(huntId: string): void {
     const dialogRef = this.dialog.open(DeleteHuntDialogComponent, {
@@ -102,6 +121,7 @@ export class CurrentHuntComponent implements OnInit, OnDestroy{
       }
     });
   }
+
 
   ngOnDestroy() {
     this.ngUnsubscribe.next();
