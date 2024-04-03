@@ -25,12 +25,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mongojack.JacksonMongoCollection;
 
 import com.mongodb.MongoClientSettings;
 import com.mongodb.ServerAddress;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
@@ -40,6 +43,7 @@ import io.javalin.Javalin;
 import io.javalin.http.BadRequestResponse;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
+import io.javalin.http.InternalServerErrorResponse;
 import io.javalin.http.NotFoundResponse;
 import io.javalin.json.JavalinJackson;
 import io.javalin.validation.BodyValidator;
@@ -60,6 +64,15 @@ public class HostControllerSpec {
   @Mock
   private Context ctx;
 
+  @Mock
+  private JacksonMongoCollection<Host> hostCollection;
+
+  @Mock
+  private JacksonMongoCollection<Hunt> huntCollection;
+
+  @Mock
+  private JacksonMongoCollection<Task> taskCollection;
+
   @Captor
   private ArgumentCaptor<ArrayList<Hunt>> huntArrayListCaptor;
 
@@ -74,6 +87,7 @@ public class HostControllerSpec {
 
   @Captor
   private ArgumentCaptor<Map<String, String>> mapCaptor;
+
 
   @BeforeAll
   static void setupAll() {
@@ -698,4 +712,71 @@ public class HostControllerSpec {
 
     assertEquals(0, db.getCollection("tasks").countDocuments(eq("huntId", testID)));
   }
+
+  @Test
+void getTaskWithInvalidId() {
+  String testID = "invalidMongoId";
+  when(ctx.pathParam("id")).thenReturn(testID);
+
+  Throwable exception = assertThrows(BadRequestResponse.class, () -> {
+    hostController.getTask(ctx);
+  });
+
+  assertEquals("The requested task id wasn't a legal Mongo Object ID.", exception.getMessage());
+}
+
+@Test
+  void getTaskById() throws IOException {
+    String testID = taskId.toHexString();
+    when(ctx.pathParam("id")).thenReturn(testID);
+
+    hostController.getTask(ctx);
+
+    assertEquals("Best Task", db.getCollection("tasks").find(eq("_id", new ObjectId(testID))).first().get("name"));
+  }
+  
+  @Test
+  void updateHuntWithInvalidId() {
+    // Arrange
+    String id = "invalid id";
+    when(ctx.pathParam("id")).thenReturn(id);
+  
+    // Act and Assert
+    assertThrows(BadRequestResponse.class, () -> hostController.updateHunt(ctx));
+  }
+  
+  @Test
+  void updateHuntWithNonexistentId() {
+    // Arrange
+    String id = new ObjectId().toHexString();
+    when(ctx.pathParam("id")).thenReturn(id);
+    when(huntCollection.findOne(eq("_id", new ObjectId(id)))).thenReturn(null);
+  
+    // Act and Assert
+    assertThrows(NotFoundResponse.class, () -> hostController.updateHunt(ctx));
+  }
+
+
+@Test
+void updateTaskWithInvalidId() {
+  // Arrange
+  String id = "invalid id";
+  when(ctx.pathParam("id")).thenReturn(id);
+
+  // Act and Assert
+  assertThrows(BadRequestResponse.class, () -> hostController.updateTask(ctx));
+}
+
+@Test
+void updateTaskWithNonexistentId() {
+  // Arrange
+  String id = new ObjectId().toHexString();
+  when(ctx.pathParam("id")).thenReturn(id);
+  when(taskCollection.findOne(eq("_id", new ObjectId(id)))).thenReturn(null);
+
+  // Act and Assert
+  assertThrows(NotFoundResponse.class, () -> hostController.updateTask(ctx));
+}
+
+
 }
