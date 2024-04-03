@@ -13,6 +13,7 @@ export class HostService {
   readonly hostUrl: string = `${environment.apiUrl}hosts`;
   readonly huntUrl: string = `${environment.apiUrl}hunts`;
   readonly taskUrl: string = `${environment.apiUrl}tasks`;
+  readonly photoUrl: string = `${environment.apiUrl}upload`;
 
   constructor(private httpClient: HttpClient){
   }
@@ -41,5 +42,11 @@ export class HostService {
   deleteTask(id: string): Observable<void> {
     return this.httpClient.delete<void>(`/api/tasks/${id}`);
   }
+  addPhoto(photo: File): Observable<string> {
+    const formData = new FormData();
+    formData.append('photo', photo);
 
+    return this.httpClient.post<{id: string}>(this.photoUrl, formData).pipe(map(result => result.id));
+  }
+  
 }

@@ -1,8 +1,13 @@
 package umm3601;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoDatabase;
 
+import umm3601.host.FileFactory;
 import umm3601.host.HostController;
 
 public class Main {
@@ -54,15 +59,26 @@ public class Main {
    * @return An array of implementations of `Controller` for the server.
    */
   static Controller[] getControllers(MongoDatabase database) {
+    FileFactory fileFactory = new FileFactoryImpl(); // Create an instance of FileFactory
+
     Controller[] controllers = new Controller[] {
-      // You would add additional controllers here, as you create them,
-      // although you need to make sure that each of your new controllers implements
-      // the `Controller` interface.
-      //
-      // You can also remove this UserController once you don't need it.
-      new HostController(database)
+      new HostController(database, fileFactory) // Pass the FileFactory to the HostController
     };
     return controllers;
-  }
+}
 
+  /**
+   * Implementation of `FileFactory` that creates a new `File` object.
+   */
+  static class FileFactoryImpl implements FileFactory {
+    @Override
+    public File create(String path) {
+      return new File(path);
+    }
+
+    @Override
+    public FileInputStream createInputStream(File file) throws FileNotFoundException {
+      return new FileInputStream(file);
+    }
+  }
 }

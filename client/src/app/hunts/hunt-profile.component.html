@@ -47,6 +47,8 @@
     <button mat-raised-button class="remove-hunt-fab" matTooltip="Remove Hunt" matTooltipPosition="left" (click)="openDeleteHuntDialog(completeHunt.hunt._id)" data-test="removeHuntButton">
       DELETE HUNT
     </button>
+    <button mat-raised-button [routerLink]="['/photos']">Add Photo</button>
+    <button mat-raised-button [routerLink]="['/photos/delete']">Delete Photos</button>
   </mat-card>
   </div>
 </div>

@@ -64,6 +64,11 @@ test {
   // Use junit platform for unit tests
   useJUnitPlatform()
 
+  testLogging {
+    outputs.upToDateWhen {false}
+    showStandardStreams = true
+  }
+
   // After running the tests, generate a coverage report
   finalizedBy jacocoTestReport
   // After running the tests, check the coverage level

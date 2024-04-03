@@ -4,12 +4,19 @@ import static com.mongodb.client.model.Filters.eq;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -41,6 +48,7 @@ import io.javalin.http.BadRequestResponse;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
 import io.javalin.http.NotFoundResponse;
+import io.javalin.http.UploadedFile;
 import io.javalin.json.JavalinJackson;
 import io.javalin.validation.BodyValidator;
 import io.javalin.validation.ValidationException;
@@ -52,6 +60,7 @@ public class HostControllerSpec {
   private ObjectId frysId;
   private ObjectId huntId;
   private ObjectId taskId;
+  private UploadedFile uploadedFile;
 
   private static MongoClient mongoClient;
   private static MongoDatabase db;
@@ -75,6 +84,9 @@ public class HostControllerSpec {
   @Captor
   private ArgumentCaptor<Map<String, String>> mapCaptor;
 
+  @Mock
+  private FileFactory fileFactory;
+
   @BeforeAll
   static void setupAll() {
     String mongoAddr = System.getenv().getOrDefault("MONGO_ADDR", "localhost");
@@ -91,6 +103,19 @@ public class HostControllerSpec {
     db.drop();
     mongoClient.close();
   }
+
+  @BeforeEach
+    public void setup() {
+        ctx = mock(Context.class);
+        uploadedFile = mock(UploadedFile.class);
+        fileFactory = mock(FileFactory.class);
+        hostController = new HostController(db, fileFactory);
+        when(ctx.status(anyInt())).thenReturn(ctx);
+        when(ctx.result(anyString())).thenReturn(ctx);
+    when(ctx.uploadedFile("photo")).thenReturn(uploadedFile);
+    when(uploadedFile.content()).thenReturn(new ByteArrayInputStream(new byte[0]));
+    when(uploadedFile.filename()).thenReturn("test.jpg");
+      }
 
   @BeforeEach
   void setupEach() throws IOException {
@@ -185,7 +210,7 @@ public class HostControllerSpec {
     taskDocuments.insertMany(testTasks);
     taskDocuments.insertOne(task);
 
-    hostController = new HostController(db);
+    hostController = new HostController(db, fileFactory);
   }
 
   @Test
@@ -698,4 +723,76 @@ public class HostControllerSpec {
 
     assertEquals(0, db.getCollection("tasks").countDocuments(eq("huntId", testID)));
   }
+
+  @Test
+public void testUploadPhoto() throws IOException {
+  // Arrange
+  when(ctx.uploadedFile("photo")).thenReturn(uploadedFile);
+  when(uploadedFile.content()).thenReturn(new ByteArrayInputStream(new byte[0]));
+  when(uploadedFile.filename()).thenReturn("test.jpg");
+  when(ctx.status(anyInt())).thenReturn(ctx);
+  when(ctx.result(anyString())).thenReturn(ctx);
+
+  // Act
+  hostController.uploadPhoto(ctx);
+
+  // Assert
+  verify(ctx).status(200);
+  ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+  verify(ctx).result(captor.capture());
+  assertTrue(captor.getValue().startsWith("Photo uploaded successfully with ID: "));
+}
+
+@Test
+public void testUploadPhotoWithoutPhoto() {
+  // Arrange
+  when(ctx.uploadedFile("photo")).thenReturn(null);
+  when(ctx.status(anyInt())).thenReturn(ctx);
+  when(ctx.result(anyString())).thenReturn(ctx);
+
+  // Act
+  hostController.uploadPhoto(ctx);
+
+  // Assert
+  verify(ctx).status(400);
+  verify(ctx).result("Missing photo");
+}
+
+@Test
+public void testUploadPhotoWithException() {
+  // Arrange
+  when(ctx.uploadedFile("photo")).thenReturn(uploadedFile);
+  when(uploadedFile.content()).thenThrow(new RuntimeException("Test exception"));
+  when(ctx.status(anyInt())).thenReturn(ctx);
+  when(ctx.result(anyString())).thenReturn(ctx);
+
+  // Act
+  hostController.uploadPhoto(ctx);
+
+  // Assert
+  verify(ctx).status(500);
+  verify(ctx).result("Photo upload failed: Test exception");
+}
+
+@Test
+public void testGetPhoto() throws IOException {
+    // Arrange
+    String expectedPhotoPath = "uploads/photo.jpg";
+    File mockFile = mock(File.class);
+    when(mockFile.exists()).thenReturn(true);
+
+    when(fileFactory.create(expectedPhotoPath)).thenReturn(mockFile);
+    when(ctx.pathParam("filename")).thenReturn("photo.jpg");
+
+    FileInputStream fileInputStream = mock(FileInputStream.class);
+
+    when(fileFactory.createInputStream(mockFile)).thenReturn(fileInputStream);
+    when(ctx.result(any(InputStream.class))).thenReturn(ctx);
+
+    // Act
+    hostController.getPhoto(ctx);
+
+    // Assert
+    verify(ctx).result(any(InputStream.class));
+}
 }
