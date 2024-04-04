@@ -106,6 +106,17 @@ export class MockHostService extends HostService {
     super(null);
   }
 
+  http = {
+    put: jasmine.createSpy('put').and.returnValue(of({}))
+  };
+
+  editHunt(hunt) {
+    return this.http.put(`/api/hunts/${hunt._id}`, hunt);
+  }
+
+  editTask(task) {
+    return this.http.put(`/api/tasks/${task._id}`, task);
+  }
 
   getHunts(): Observable<Hunt[]> {
     return of(MockHostService.testHunts);
@@ -123,4 +134,18 @@ export class MockHostService extends HostService {
       return of(null);
     }
   }
+
+
+  getTaskById(id: string): Observable<CompleteHunt> {
+    if (id === MockHostService.testCompleteHunts[0].tasks[0]._id) {
+      return of(MockHostService.testCompleteHunts[0]);
+    } else if (id === MockHostService.testCompleteHunts[0].tasks[1]._id) {
+      return of(MockHostService.testCompleteHunts[0]);
+    } else if (id === MockHostService.testCompleteHunts[0].tasks[2]._id) {
+      return of(MockHostService.testCompleteHunts[0]);
+    } else {
+      return of(null);
+    }
+  }
 }
+

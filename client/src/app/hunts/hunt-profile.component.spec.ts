@@ -23,7 +23,7 @@ describe('HuntProfileComponent', () => {
   let component: HuntProfileComponent;
   let fixture: ComponentFixture<HuntProfileComponent>;
   const mockHostService = new MockHostService();
-  const chrisId = 'chris_id';
+  const chrisId = 'ann_id';
   const activatedRoute: ActivatedRouteStub = new ActivatedRouteStub({
     id : chrisId
   });
@@ -57,17 +57,26 @@ describe('HuntProfileComponent', () => {
   it('should navigate to a specific hunt profile', () => {
     const expectedHunt: CompleteHunt = MockHostService.testCompleteHunts[0];
     activatedRoute.setParamMap({ id: expectedHunt.hunt._id });
+    component.ngOnInit();
     expect(component.completeHunt).toEqual(expectedHunt);
   });
 
   it('should navigate to correct hunt when the id parameter changes', () => {
     let expectedHunt: CompleteHunt = MockHostService.testCompleteHunts[0];
     activatedRoute.setParamMap({ id: expectedHunt.hunt._id });
-    expect(component.completeHunt).toEqual(expectedHunt);
-
-    expectedHunt = MockHostService.testCompleteHunts[1];
-    activatedRoute.setParamMap({ id: expectedHunt.hunt._id });
-    expect(component.completeHunt).toEqual(expectedHunt);
+    component.ngOnInit();
+    fixture.whenStable().then(() => {
+      fixture.detectChanges();
+      expect(component.completeHunt).toEqual(expectedHunt);
+  
+      expectedHunt = MockHostService.testCompleteHunts[1];
+      activatedRoute.setParamMap({ id: expectedHunt.hunt._id });
+      component.ngOnInit();
+      fixture.whenStable().then(() => {
+        fixture.detectChanges();
+        expect(component.completeHunt).toEqual(expectedHunt);
+      });
+    });
   });
 
   it('should have `null` for the hunt for a bad ID', () => {
@@ -101,7 +110,7 @@ describe('DeleteHunt()', () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let location: Location;
   let router: Router;
-  const fryId = 'fry_id';
+  const fryId = 'fran_id';
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const activatedRoute: ActivatedRouteStub = new ActivatedRouteStub({
     id : fryId
@@ -177,3 +186,37 @@ describe('DeleteHunt()', () => {
 });
 
 
+// component.completeHunt = {
+//   hunt: {
+//     _id: "jan_id",
+//     hostId: "jan_hid",
+//     name: "Jans Hunt",
+//     description: "super fun and exciting hunt",
+//     est: 60,
+//     numberOfTasks: 4,
+//   },
+//  tasks: [ {
+//     "_id": "588933f57556a3daea54de8c",
+//     "huntId": "jan_id",
+//     "name": "Take a picture of a red car",
+//     "status": false
+//   },
+//   {
+//     "_id": "588535f57556a3daea54de8c",
+//     "huntId": "jan_id",
+//     "name": "Take a picture of a slide",
+//     "status": false
+//   },
+//   {
+//     "_id": "583935f57556a3daea54de8c",
+//     "huntId": "jan_id",
+//     "name": "Take a picture of a Yield sign",
+//     "status": false
+//   },
+//   {
+//     "_id": "548935f57556a3daea54de8c",
+//     "huntId": "jan_id",
+//     "name": "Take a picture of a football field",
+//     "status": false
+//   }]
+// };
