@@ -5,4 +5,5 @@ export interface Hunt {
   description: string;
   est: number;
   numberOfTasks: number;
+  
 }
