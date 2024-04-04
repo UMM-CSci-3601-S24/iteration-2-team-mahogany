@@ -21,6 +21,11 @@ const routes: Routes = [
   {path: 'hunts/new', component: AddHuntComponent, title: 'Add Hunt'},
   {path: 'hunts/:id', component: HuntProfileComponent, title: 'Hunts Profile'},
   {path: 'hunts', component: HuntCardComponent, title: 'Hunts'},
+  {path: 'photos', component: AddPhotoComponent, title: 'Add Photo'},
+  {path : 'photo/:filename', component: PhotoViewerComponent, title: 'Photo Viewer'},
+  {path: 'photos/delete', component: DeletePhotoComponent, title: 'Delete Photo'},
+  {path: 'hunts/edit/:id', component: HuntEditComponent, title: 'Edit Hunt'},
+  {path: 'tasks/edit/:id', component: TaskEditComponent, title: 'Edit Task'}
 ];
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
