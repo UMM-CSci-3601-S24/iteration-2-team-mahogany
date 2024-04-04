@@ -1,12 +1,14 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { HostService } from '../../hosts/host.service';
+import { RouterModule } from '@angular/router';
 
 
 @Component({
   selector: 'app-add-photo',
   templateUrl: './add-photo.component.html', // Change this line
-
+  standalone: true,
+  imports: [RouterModule]
 
 })
 
