@@ -14,6 +14,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { HostService } from 'src/app/hosts/host.service';
 import { Hunt } from '../hunt';
 import { AddPhotoComponent } from '../addPhoto/add-photo.component';
+import { DeletePhotoComponent } from '../deletePhoto/delete-photo.component';
 
 
 @Component({
@@ -21,7 +22,7 @@ import { AddPhotoComponent } from '../addPhoto/add-photo.component';
     standalone: true,
     templateUrl: './current-hunt.component.html',
     styleUrl: './current-hunt.component.scss',
-    imports: [AddPhotoComponent, HuntCardComponent, MatCard, MatCardTitle, MatIcon, MatDivider, AddTaskComponent, MatCardContent, MatCardActions, RouterLink]
+    imports: [AddPhotoComponent, DeletePhotoComponent, HuntCardComponent, MatCard, MatCardTitle, MatIcon, MatDivider, AddTaskComponent, MatCardContent, MatCardActions, RouterLink]
 })
 export class CurrentHuntComponent implements OnInit, OnDestroy {
   hunt = input.required<Hunt>();
