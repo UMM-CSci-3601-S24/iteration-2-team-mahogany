@@ -188,4 +188,72 @@ describe('When getHunts() is called', () => {
       });
     }));
   });
+
+  describe('Editing a hunt using `editHunt()`', () => {
+    it('talks to the right endpoint and is called once', waitForAsync(() => {
+      const hunt_id = 'hunt_id';
+      const updatedHunt = { 
+        _id: 'hunt_id',
+        hostId: 'host_id',
+        name: 'Updated Hunt',
+        description: 'This is the updated hunt',
+        est: 25,
+        numberOfTasks: 0
+      };
+  
+      const mockedMethod = spyOn(httpClient, 'put')
+        .and
+        .returnValue(of(updatedHunt));
+  
+      hostService.editHunt(hunt_id, updatedHunt).subscribe((updated_hunt) => {
+        expect(updated_hunt).toEqual(updatedHunt);
+        expect(mockedMethod)
+          .withContext('one call')
+          .toHaveBeenCalledTimes(1);
+        expect(mockedMethod)
+          .withContext('talks to the correct endpoint')
+          .toHaveBeenCalledWith(`${hostService.huntUrl}/${hunt_id}`, updatedHunt);
+      });
+    }));
+  });
+  
+  describe('Editing a task using `editTask()`', () => {
+    it('talks to the right endpoint and is called once', waitForAsync(() => {
+      const task_id = 'task_id';
+      const updatedTask: Task = { _id: '', huntId: '', name: 'Updated Task', status: true };
+  
+      const mockedMethod = spyOn(httpClient, 'put')
+        .and
+        .returnValue(of(updatedTask));
+  
+      hostService.editTask(task_id, updatedTask).subscribe((updated_task: Task) => {
+        expect(updated_task).toEqual(updatedTask);
+        expect(mockedMethod)
+          .withContext('one call')
+          .toHaveBeenCalledTimes(1);
+        expect(mockedMethod)
+          .withContext('talks to the correct endpoint')
+          .toHaveBeenCalledWith(`${hostService.taskUrl}/${task_id}`, updatedTask);
+      });
+    }));
+  });
+  
+  describe('When getTaskById() is given an ID', () => {
+    it('calls api/tasks/id with the correct ID', waitForAsync(() => {
+      const targetTask: Task = testTasks[1];
+      const targetId: string = targetTask._id;
+  
+      const mockedMethod = spyOn(httpClient, 'get').and.returnValue(of(targetTask));
+  
+      hostService.getTaskById(targetId).subscribe(() => {
+        expect(mockedMethod)
+          .withContext('one call')
+          .toHaveBeenCalledTimes(1);
+  
+        expect(mockedMethod)
+          .withContext('talks to the correct endpoint')
+          .toHaveBeenCalledWith(`${hostService.taskUrl}/${targetId}`);
+      });
+    }));
+  });
 });

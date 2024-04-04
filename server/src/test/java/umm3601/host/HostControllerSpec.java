@@ -35,6 +35,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mongojack.JacksonMongoCollection;
 
 import com.mongodb.MongoClientSettings;
 import com.mongodb.ServerAddress;
@@ -68,6 +69,15 @@ public class HostControllerSpec {
 
   @Mock
   private Context ctx;
+
+  @Mock
+  private JacksonMongoCollection<Host> hostCollection;
+
+  @Mock
+  private JacksonMongoCollection<Hunt> huntCollection;
+
+  @Mock
+  private JacksonMongoCollection<Task> taskCollection;
 
   @Captor
   private ArgumentCaptor<ArrayList<Hunt>> huntArrayListCaptor;
@@ -794,5 +804,59 @@ public void testGetPhoto() throws IOException {
 
     // Assert
     verify(ctx).result(any(InputStream.class));
+}
+
+@Test
+void getTaskWithInvalidId() {
+  String testID = "invalidMongoId";
+  when(ctx.pathParam("id")).thenReturn(testID);
+
+  Throwable exception = assertThrows(BadRequestResponse.class, () -> {
+    hostController.getTask(ctx);
+  });
+
+  assertEquals("The requested task id wasn't a legal Mongo Object ID.", exception.getMessage());
+}
+
+@Test
+  void getTaskById() throws IOException {
+    String testID = taskId.toHexString();
+    when(ctx.pathParam("id")).thenReturn(testID);
+
+    hostController.getTask(ctx);
+
+    assertEquals("Best Task", db.getCollection("tasks").find(eq("_id", new ObjectId(testID))).first().get("name"));
+  }
+
+  @Test
+  void updateHuntWithInvalidId() {
+    String id = "invalid id";
+    when(ctx.pathParam("id")).thenReturn(id);
+    assertThrows(BadRequestResponse.class, () -> hostController.updateHunt(ctx));
+  }
+  @Test
+  void updateHuntWithNonexistentId() {
+    String id = new ObjectId().toHexString();
+    when(ctx.pathParam("id")).thenReturn(id);
+    when(huntCollection.findOne(eq("_id", new ObjectId(id)))).thenReturn(null);
+
+    assertThrows(NotFoundResponse.class, () -> hostController.updateHunt(ctx));
+  }
+
+@Test
+void updateTaskWithInvalidId() {
+  String id = "invalid id";
+  when(ctx.pathParam("id")).thenReturn(id);
+
+  assertThrows(BadRequestResponse.class, () -> hostController.updateTask(ctx));
+}
+
+@Test
+void updateTaskWithNonexistentId() {
+  String id = new ObjectId().toHexString();
+  when(ctx.pathParam("id")).thenReturn(id);
+  when(taskCollection.findOne(eq("_id", new ObjectId(id)))).thenReturn(null);
+
+  assertThrows(NotFoundResponse.class, () -> hostController.updateTask(ctx));
 }
 }

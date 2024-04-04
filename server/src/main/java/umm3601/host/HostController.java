@@ -4,6 +4,7 @@ import io.javalin.Javalin;
 import io.javalin.http.BadRequestResponse;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
+import io.javalin.http.InternalServerErrorResponse;
 import io.javalin.http.NotFoundResponse;
 import umm3601.Controller;
 import java.io.File;
@@ -40,6 +41,8 @@ public class HostController implements Controller {
   private static final String API_HUNTS = "/api/hunts";
   private static final String API_TASK = "/api/tasks/{id}";
   private static final String API_TASKS = "/api/tasks";
+
+
   private static final String API_UPLOAD = "/api/upload";
   private static final String API_PHOTO = "/api/photo/{filename}";
 
@@ -223,6 +226,21 @@ public void deletePhoto(Context ctx) {
 
     return matchingTasks;
   }
+  public void getTask(Context ctx) {
+    String id = ctx.pathParam("id");
+    Task task;
+
+    try {
+      task = taskCollection.find(eq("_id", new ObjectId(id))).first();
+    } catch (IllegalArgumentException e) {
+      throw new BadRequestResponse("The requested task id wasn't a legal Mongo Object ID.");
+    }
+    if (task == null) {
+      throw new NotFoundResponse("The requested task was not found");
+    } else {
+      ctx.json(task);
+    }
+}
 
   private Bson constructSortingOrderTasks(Context ctx) {
     String sortBy = Objects.requireNonNullElse(ctx.queryParam("sortby"), "name");
@@ -237,7 +255,7 @@ public void deletePhoto(Context ctx) {
     .check(hunt -> hunt.name.length() > 0, "Name must be at least 1 character")
     .check(hunt -> hunt.description.length() < REASONABLE_DESCRIPTION_LENGTH_HUNT,
      "Description must be less than 200 characters")
-    .check(hunt -> hunt.est < REASONABLE_EST_LENGTH_HUNT, "Estimated time must be less than 4 hours")
+    .check(hunt -> hunt.est <= REASONABLE_EST_LENGTH_HUNT, "Estimated time must be less than 4 hours")
     .get();
 
     huntCollection.insertOne(newHunt);
@@ -280,6 +298,59 @@ public void deletePhoto(Context ctx) {
     deleteTasks(ctx);
     ctx.status(HttpStatus.OK);
   }
+
+public void updateHunt(Context ctx) {
+  String id = ctx.pathParam("id");
+  Hunt updatedHunt = ctx.bodyAsClass(Hunt.class);
+  Hunt hunt;
+
+  try {
+    hunt = huntCollection.findOne(eq("_id", new ObjectId(id)));
+  } catch (IllegalArgumentException e) {
+    throw new BadRequestResponse("The requested hunt id wasn't a legal Mongo Object ID.");
+  }
+
+  if (hunt == null) {
+    throw new NotFoundResponse("The requested hunt was not found");
+  } else {
+try {
+  hunt = huntCollection.findOneAndReplace(eq("_id", new ObjectId(id)), updatedHunt);
+  ctx.json(hunt);
+  ctx.status(HttpStatus.OK);
+} catch (Exception e) {
+  e.printStackTrace(); // This will print the stack trace of the exception to the console
+  throw new InternalServerErrorResponse("Error updating the hunt.");
+}
+  }
+
+
+}
+  public void updateTask(Context ctx) {
+  String id = ctx.pathParam("id");
+  Task updatedTask = ctx.bodyAsClass(Task.class);
+  Task task;
+
+  try {
+    task = taskCollection.findOne(eq("_id", new ObjectId(id)));
+  } catch (IllegalArgumentException e) {
+    throw new BadRequestResponse("The requested task id wasn't a legal Mongo Object ID.");
+  }
+
+  if (task == null) {
+    throw new NotFoundResponse("The requested task was not found");
+  } else {
+    try {
+      System.out.println("Updated task: " + updatedTask);
+      task = taskCollection.findOneAndReplace(eq("_id", new ObjectId(id)), updatedTask);
+      System.out.println("Result of findOneAndReplace: " + task);
+      ctx.json(task);
+      ctx.status(HttpStatus.OK);
+    } catch (Exception e) {
+      e.printStackTrace(); // This will print the stack trace of the exception to the console
+      throw new InternalServerErrorResponse("Error updating the task.");
+    }
+  }
+}
 
   public void deleteTask(Context ctx) {
     String id = ctx.pathParam("id");
@@ -329,6 +400,10 @@ public void deletePhoto(Context ctx) {
     server.post(API_TASKS, this::addNewTask);
     server.delete(API_HUNT, this::deleteHunt);
     server.delete(API_TASK, this::deleteTask);
+    server.put(API_HUNT, this::updateHunt);
+    server.put(API_TASK, this::updateTask);
+    server.get(API_TASK, this::getTask);
+
     server.delete(API_PHOTO, this::deletePhoto);
     server.post(API_UPLOAD, this::uploadPhoto);
     server.get(API_PHOTO, this::getPhoto);
