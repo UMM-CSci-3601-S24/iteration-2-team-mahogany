@@ -13,6 +13,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { HostService } from 'src/app/hosts/host.service';
 import { Hunt } from '../hunt';
+import { AddPhotoComponent } from '../addPhoto/add-photo.component';
 
 
 @Component({
@@ -20,7 +21,7 @@ import { Hunt } from '../hunt';
     standalone: true,
     templateUrl: './current-hunt.component.html',
     styleUrl: './current-hunt.component.scss',
-    imports: [HuntCardComponent, MatCard, MatCardTitle, MatIcon, MatDivider, AddTaskComponent, MatCardContent, MatCardActions, RouterLink]
+    imports: [AddPhotoComponent, HuntCardComponent, MatCard, MatCardTitle, MatIcon, MatDivider, AddTaskComponent, MatCardContent, MatCardActions, RouterLink]
 })
 export class CurrentHuntComponent implements OnInit, OnDestroy {
   hunt = input.required<Hunt>();

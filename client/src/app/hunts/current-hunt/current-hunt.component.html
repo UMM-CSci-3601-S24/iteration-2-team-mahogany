@@ -17,8 +17,9 @@
            <div class="task-line">
           <li matListItemTitle mat-line class="task-list-name"> {{task.name}} </li>
           <div class="photo-buttons">
-            <button id="add-photo-button" mat-raised-button [routerLink]="['/photos']">Add Photo</button>
-            <button id="delete-photo-button" mat-raised-button [routerLink]="['/photos/delete']">Delete Photos</button>
+            <!-- <button id="add-photo-button" mat-raised-button [routerLink]="['/photos']">Add Photo</button> -->
+            <app-add-photo></app-add-photo>
+            <!-- <button id="delete-photo-button" mat-raised-button [routerLink]="['/photos/delete']">Delete Photos</button> -->
           </div>
         </div>
           <mat-divider></mat-divider>
