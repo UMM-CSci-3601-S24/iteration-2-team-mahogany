@@ -37,7 +37,7 @@ export class AddHuntComponent {
       Validators.required,
       Validators.min(0),
       Validators.max(240),
-      Validators.pattern('^[0-9]+$')
+      Validators.pattern('[0-9]+')
     ])),
   });
 

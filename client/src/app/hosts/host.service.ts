@@ -25,6 +25,9 @@ export class HostService {
   getHuntById(id: string): Observable<CompleteHunt> {
     return this.httpClient.get<CompleteHunt>(`${this.huntUrl}/${id}`);
   }
+  getTaskById(id: string): Observable<CompleteHunt> {
+    return this.httpClient.get<CompleteHunt>(`${this.taskUrl}/${id}`);
+  }
 
   addHunt(newHunt: Partial<Hunt>): Observable<string> {
     newHunt.hostId = "588945f57546a2daea44de7c";
@@ -42,9 +45,23 @@ export class HostService {
   deleteTask(id: string): Observable<void> {
     return this.httpClient.delete<void>(`/api/tasks/${id}`);
   }
+
+  editHunt(id: string, updatedHunt: { name: string; description: string; est: number; }): Observable<Hunt> {
+    console.log("Editing hunt with id: " + id);
+    console.log(this.huntUrl + "/" + id);
+    return this.httpClient.put<Hunt>(`${this.huntUrl}/${id}`, updatedHunt);
+  }
+
+  editTask(id: string, updatedTask: Partial<Task>): Observable<Task> {
+    console.log("Editing task with id: " + id);
+    console.log(this.taskUrl + "/" + id);
+    return this.httpClient.put<Task>(`${this.taskUrl}/${id}`, updatedTask);
+  }
+
   addPhoto(photo: File): Observable<string> {
     const formData = new FormData();
     formData.append('photo', photo);
+
 
     return this.httpClient.post<{id: string}>(this.photoUrl, formData).pipe(map(result => result.id));
   }

@@ -7,12 +7,6 @@
     text-align: center;
 }
 
-@media (prefers-color-scheme: dark) {
-    .title {
-      color: rgb(255, 255, 255); // color for dark mode
-    }
-  }
-
 .message {
     font-size: 20px;
     font-weight: bold;
