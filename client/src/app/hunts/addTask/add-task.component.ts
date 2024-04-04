@@ -8,13 +8,14 @@ import { MatInputModule } from "@angular/material/input";
 import { MatSelectModule } from "@angular/material/select";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { HostService } from "src/app/hosts/host.service";
+import { RouterModule } from '@angular/router';
 
 @Component({
     selector: 'app-add-task',
     templateUrl: './add-task.component.html',
     styleUrls: ['./add-task.component.scss'],
     standalone: true,
-    imports: [FormsModule, ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatOptionModule, MatButtonModule],
+    imports: [FormsModule, RouterModule, ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatOptionModule, MatButtonModule],
     providers: [HostService]
 })
 export class AddTaskComponent {
