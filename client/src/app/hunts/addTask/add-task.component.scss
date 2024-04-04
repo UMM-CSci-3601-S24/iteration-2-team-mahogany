@@ -1,0 +1,22 @@
+.add-task-button {
+  font-size: 14px;
+  padding: 10px 20pxd;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-left: 35px;
+}
+
+.add-task-button:hover {
+  background-color: #5495da;
+}
+
+.add-task-button:active {
+  background-color: #3c6e9c;
+}
+
+.add-task-title {
+  font-size: 24px;
+  margin-bottom: 20px;
+  filter: invert(1);
+  mix-blend-mode: difference;
+}

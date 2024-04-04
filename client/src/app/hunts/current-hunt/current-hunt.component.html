@@ -1,0 +1,56 @@
+<div class="current-hunt-card">
+  <h1 class="current-hunt-title">{{ this.completeHunt.hunt.name }}</h1>
+  <h2 class="elapsed-time">
+      <span>{{ secondsElapsed }}</span> seconds have gone by!
+  </h2>
+</div>
+
+
+
+<div class="flex-row">
+  <div class="flex-1">
+    <mat-card class="background">
+    @if (completeHunt) {
+      <ol class="task-list">
+        <mat-card-title class="tasks-title">Tasks:</mat-card-title>
+        @for (task of this.completeHunt.tasks; track task._id) {
+           <div class="task-line">
+          <li matListItemTitle mat-line class="task-list-name"> {{task.name}} </li>
+          <div class="photo-buttons">
+            <!-- <button id="add-photo-button" mat-raised-button [routerLink]="['/photos']">Add Photo</button> -->
+            <app-add-photo></app-add-photo>
+            <app-delete-photo></app-delete-photo>
+            <!-- <button id="delete-photo-button" mat-raised-button [routerLink]="['/photos/delete']">Delete Photos</button> -->
+          </div>
+        </div>
+          <mat-divider></mat-divider>
+          }
+    </ol>
+    <button class="stop-button" (click)="stopCountUp()" type="button" routerLink="/hosts">End Hunt</button>
+    } @else if (error) {
+      <mat-card class="error-card">
+        <mat-card-content>
+          <h2>
+            {{ error.help }}
+          </h2>
+          <p>
+            {{ error.message }}
+          </p>
+          <p>
+            {{ error.httpResponse }}
+          </p>
+        </mat-card-content>
+        <mat-card-actions>
+          <button color=primary mat-raised-button routerLink="/hunts">Back to Hunts</button>
+        </mat-card-actions>
+      </mat-card>
+    } @else {
+      <mat-card>
+        <mat-card-content>
+          <p>Loading Hunt Profile data...</p>
+        </mat-card-content>
+      </mat-card>
+    }
+  </mat-card>
+  </div>
+</div>

@@ -1,0 +1,57 @@
+.add-hunt-fab {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  background-color: #007BFF;
+}
+
+.hunt-list-title {
+  font-size: 30px;
+  filter: invert(1);
+  mix-blend-mode: difference;
+}
+
+.hunt-cards-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  gap: 1px;
+}
+
+.flex-1 {
+  flex: 1;
+  width: 100%;
+}
+
+.hunt-card {
+  width: 100%;
+  max-width: 300px;
+  height: 100%;
+  max-height: 700px;
+  margin: 8px;
+}
+
+.search-card {
+  width: 100%;
+  height: 100%;
+  max-height: 700px;
+  margin: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: space-between;
+  border: 1px solid #01b5ec;
+  box-shadow: 0 0 8px 0 rgb(0, 158, 250);
+}
+.header-content {
+  display: flex;
+  justify-content: space-between;
+}
+
+.username-content {
+  text-align: right;
+}
