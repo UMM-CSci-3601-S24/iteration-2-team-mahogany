@@ -12,6 +12,7 @@ import { MatDivider } from '@angular/material/divider';
 import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { HttpClientModule } from '@angular/common/http';
+import { RouterLink } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { DeleteHuntDialogComponent } from './deleteHunt/delete-hunt-dialog.component';
 import { DeleteTaskDialogComponent } from './deleteTask/delete-task-dialog.component';
@@ -23,7 +24,10 @@ import { TaskEditComponent } from './task-edit/task-edit.component';
   templateUrl: './hunt-profile.component.html',
   styleUrls: ['./hunt-profile.component.scss'],
     standalone: true,
+
     imports: [HuntCardComponent, MatCardModule, AddTaskComponent, MatDivider, MatIconButton, MatIcon, HttpClientModule, RouterModule, TaskEditComponent]
+
+
 })
 export class HuntProfileComponent implements OnInit, OnDestroy {
   confirmDeleteHunt: boolean =false;

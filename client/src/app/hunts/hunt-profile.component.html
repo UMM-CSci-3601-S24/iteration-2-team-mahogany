@@ -52,9 +52,14 @@
     <button mat-raised-button class="remove-hunt-fab" matTooltip="Remove Hunt" matTooltipPosition="left" (click)="openDeleteHuntDialog(completeHunt.hunt._id)" data-test="removeHuntButton">
       DELETE HUNT
     </button>
+
     <button mat-fab class="edit-hunt-fab" matTooltip="Edit Hunt" matTooltipPosition="left" [routerLink]="['/hunts', completeHunt.hunt._id, 'edit']" data-test="editHuntButton">
       <mat-icon class="md-24" aria-label="Edit Hunt">edit</mat-icon>
     </button>
+
+    <!-- <button mat-raised-button [routerLink]="['/photos']">Add Photo</button>
+    <button mat-raised-button [routerLink]="['/photos/delete']">Delete Photos</button> -->
+
   </mat-card>
   </div>
 </div>

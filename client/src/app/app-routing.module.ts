@@ -5,8 +5,16 @@ import { HostProfileComponent } from './hosts/host-profile.component';
 import { HuntProfileComponent } from './hunts/hunt-profile.component';
 import { HuntCardComponent } from './hunts/hunt-card.component';
 import { AddHuntComponent } from './hunts/addHunt/add-hunt.component';
+
 import { HuntEditComponent } from './hunts/hunt-edit/hunt-edit.component';
 import { TaskEditComponent } from './hunts/task-edit/task-edit.component';
+
+import { AddPhotoComponent } from './hunts/addPhoto/add-photo.component';
+import { PhotoViewerComponent } from './photo-viewer/photo-viewer.component';
+import { DeletePhotoComponent } from './hunts/deletePhoto/delete-photo.component';
+import { CurrentHuntComponent } from './hunts/current-hunt/current-hunt.component';
+
+
 
 // Note that the 'users/new' route needs to come before 'users/:id'.
 // If 'users/:id' came first, it would accidentally catch requests to
@@ -19,10 +27,13 @@ const routes: Routes = [
   {path: 'hunts', component: HuntCardComponent, title: 'Hunts'},
   {path: 'hunts/:id/edit', component: HuntEditComponent, title: 'Edit Hunt'},
   {path: 'tasks/:id/edit', component: TaskEditComponent, title: 'Edit Task'},
+  {path: 'photos', component: AddPhotoComponent, title: 'Add Photo'},
+  {path : 'photo/:filename', component: PhotoViewerComponent, title: 'Photo Viewer'},
+  {path: 'photos/delete', component: DeletePhotoComponent, title: 'Delete Photo'},
+  {path: 'hunts/current/:id', component: CurrentHuntComponent, title: 'Current Hunt'},
 ];
-
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class AppRoutingModule { }
