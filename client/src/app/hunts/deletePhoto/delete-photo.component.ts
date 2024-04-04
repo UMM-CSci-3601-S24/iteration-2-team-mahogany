@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 @Component({
   selector: 'app-delete-photo',
   templateUrl: './delete-photo.component.html',
+  standalone: true
 })
 export class DeletePhotoComponent {
   constructor(private http: HttpClient) {}

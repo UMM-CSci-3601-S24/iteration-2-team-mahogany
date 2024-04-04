@@ -85,6 +85,7 @@
 
 .photo-buttons {
   display: flex;
+  justify-content: space-between;
 }
 
 
@@ -95,6 +96,10 @@
 #add-photo-button:hover {
   background-color: green;
   color: white;
+}
+
+#delete-photo-button {
+  margin-left: 90px;
 }
 
 #delete-photo-button:hover {
