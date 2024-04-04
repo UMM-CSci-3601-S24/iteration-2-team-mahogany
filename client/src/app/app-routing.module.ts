@@ -25,8 +25,8 @@ const routes: Routes = [
   {path: 'photos', component: AddPhotoComponent, title: 'Add Photo'},
   {path : 'photo/:filename', component: PhotoViewerComponent, title: 'Photo Viewer'},
   {path: 'photos/delete', component: DeletePhotoComponent, title: 'Delete Photo'},
-  {path: 'hunts/edit/:id', component: HuntEditComponent, title: 'Edit Hunt'},
-  {path: 'tasks/edit/:id', component: TaskEditComponent, title: 'Edit Task'},
+  {path: 'hunts/:id/edit', component: HuntEditComponent, title: 'Edit Hunt'},
+  {path: 'tasks/:id/edit', component: TaskEditComponent, title: 'Edit Task'},
   {path: 'hunts/current/:id', component: CurrentHuntComponent, title: 'Current Hunt'},
 ];
 @NgModule({
