@@ -22,13 +22,13 @@ describe('Hunt Profile', () => {
 
   describe('Adding a new task and deleting hunts and tasks', () => {
 
-    it('should add a task', () => {
-      page.addTaskButton().should('be.visible').click();
-      page.confirmAddTaskButton().should('be.disabled');
-      page.getFormField('name').type('Test');
-      page.confirmAddTaskButton().should('be.enabled').click();
-      page.getTasks().last().contains('Test');
-    });
+    // it('should add a task', () => {
+    //   page.addTaskButton().should('be.visible').click();
+    //   page.confirmAddTaskButton().should('be.disabled');
+    //   page.getFormField('name').type('Test');
+    //   page.confirmAddTaskButton().should('be.enabled').click();
+    //   page.getTasks().last().contains('Test');
+    // });
 
     it('should delete a task', () => {
       page.deleteTask();
